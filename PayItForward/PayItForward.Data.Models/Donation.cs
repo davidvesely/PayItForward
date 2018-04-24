@@ -1,15 +1,30 @@
-﻿namespace PayItForward.Data.Models
+﻿// <copyright file="Donation.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace PayItForward.Data.Models
 {
+    using System.Collections.Generic;
+
     public class Donation
     {
-        public int DonationId { get; set; }
+        private readonly List<Story> stories;
 
-        public User User { get; set; }
+        public Donation()
+        {
+            this.stories = new List<Story>();
+        }
 
-        public Story Story { get; set; }
+        public int? DonationId { get; private set; }
 
-        public int StoryId { get; set; }
+        public User User { get; }
 
-        public int Amount { get; set; }
+        public int UserId { get; }
+
+        public ICollection<Story> Stories => this.stories;
+
+        public int StoryId { get; }
+
+        public decimal Amount { get; set; }
     }
 }
