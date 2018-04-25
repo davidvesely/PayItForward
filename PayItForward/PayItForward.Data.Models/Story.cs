@@ -23,15 +23,19 @@ namespace PayItForward.Data.Models
         public Guid StoryId { get; set;  }
 
         [Required]
+        [StringLength(15, MinimumLength = 3)]
         public string Title { get; set;  }
 
         [Column(TypeName = "varchar(200)")]
         public string ImageUrl { get; set; }
 
+        [StringLength(50, MinimumLength = 5)]
         public string Description { get; set; }
 
+        [Column(TypeName = "money")]
         public decimal GoalAmount { get; set; }
 
+        [Column(TypeName = "money")]
         public decimal CollectedAmount { get; set; }
 
         public bool IsClosed { get; set; }

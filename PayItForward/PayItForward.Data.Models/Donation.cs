@@ -25,6 +25,7 @@ namespace PayItForward.Data.Models
         [Required]
         public Guid StoryId { get; set; }
 
+        [Column(TypeName = "money")]
         public decimal Amount { get; set; }
     }
 }

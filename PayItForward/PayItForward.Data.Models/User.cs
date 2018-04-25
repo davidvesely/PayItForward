@@ -21,9 +21,11 @@ namespace PayItForward.Data.Models
         }
 
         [Required]
-        public string FirstNmae { get; set; }
+        [StringLength(15)]
+        public string FirstName { get; set; }
 
         [Required]
+        [StringLength(20)]
         public string LastName { get; set; }
 
         [Required]
