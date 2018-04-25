@@ -6,6 +6,7 @@ namespace PayItForward.Data.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
     public class Story
@@ -17,9 +18,11 @@ namespace PayItForward.Data.Models
             this.donations = new HashSet<Donation>();
         }
 
+        [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid StoryId { get; set;  }
 
+        [Required]
         public string Title { get; set;  }
 
         [Column(TypeName = "varchar(200)")]
@@ -42,10 +45,12 @@ namespace PayItForward.Data.Models
 
         public Category Category { get; set; }
 
+        [Required]
         public Guid CategoryId { get; set; }
 
         public User User { get; set; }
 
+        [Required]
         public string UserId { get; set; }
 
         [Column(TypeName = "varchar(200)")]
