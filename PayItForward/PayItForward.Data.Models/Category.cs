@@ -1,21 +1,20 @@
-﻿// <copyright file="Category.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-namespace PayItForward.Data.Models
+﻿namespace PayItForward.Data.Models
 {
+    using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations.Schema;
 
     public class Category
     {
-        private readonly List<Story> stories;
+        private readonly ICollection<Story> stories;
 
         public Category()
         {
-            this.stories = new List<Story>();
+            this.stories = new HashSet<Story>();
         }
 
-        public int CategoryId { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid CategoryId { get; set; }
 
         public string Name { get; set; }
 

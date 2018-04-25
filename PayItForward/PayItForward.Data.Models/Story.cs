@@ -10,16 +10,17 @@ namespace PayItForward.Data.Models
 
     public class Story
     {
-        private readonly List<Donation> donations;
+        private readonly ICollection<Donation> donations;
 
         public Story()
         {
-            this.donations = new List<Donation>();
+            this.donations = new HashSet<Donation>();
         }
 
-        public int? StoryId { get; private set;  }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid StoryId { get; set;  }
 
-        public string Tittle { get; set;  }
+        public string Title { get; set;  }
 
         [Column(TypeName = "varchar(200)")]
         public string ImageUrl { get; set; }
@@ -28,23 +29,24 @@ namespace PayItForward.Data.Models
 
         public decimal GoalAmount { get; set; }
 
-        public decimal? CollectedAmount { get; set; }
+        public decimal CollectedAmount { get; set; }
 
         public bool IsClosed { get; set; }
 
         public bool IsAccepted { get; set;  }
 
-        public DateTime DateCreated { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public DateTime DateCreated { get; set; } = DateTime.UtcNow;
 
-        public DateTime? ExpirationDate { get; set; }
+        public DateTime ExpirationDate { get; set; }
 
         public Category Category { get; set; }
 
-        public int CategoryId { get; set; }
+        public Guid CategoryId { get; set; }
 
-        public User User { get; }
+        public User User { get; set; }
 
-        public int UserId { get; }
+        public string UserId { get; set; }
 
         [Column(TypeName = "varchar(200)")]
         public string DocumentUrl { get; set; }

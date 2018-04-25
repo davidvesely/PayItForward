@@ -4,26 +4,22 @@
 
 namespace PayItForward.Data.Models
 {
+    using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations.Schema;
 
     public class Donation
     {
-        private readonly List<Story> stories;
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid DonationId { get; set; }
 
-        public Donation()
-        {
-            this.stories = new List<Story>();
-        }
+        public User User { get; set; }
 
-        public int? DonationId { get; private set; }
+        public string UserId { get; set;  }
 
-        public User User { get; }
+        public Story Story { get; set; }
 
-        public int UserId { get; }
-
-        public ICollection<Story> Stories => this.stories;
-
-        public int StoryId { get; }
+        public Guid StoryId { get; set; }
 
         public decimal Amount { get; set; }
     }

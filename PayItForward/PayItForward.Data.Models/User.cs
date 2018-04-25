@@ -9,24 +9,24 @@ namespace PayItForward.Data.Models
     using System.ComponentModel.DataAnnotations.Schema;
     using Microsoft.AspNetCore.Identity;
 
-    public class User : IdentityUser<int>
+    public class User : IdentityUser
     {
-        private readonly List<Story> stories;
-        private readonly List<Donation> donations;
+        private readonly ICollection<Story> stories;
+        private readonly ICollection<Donation> donations;
 
         public User()
         {
-            this.donations = new List<Donation>();
-            this.stories = new List<Story>();
+            this.donations = new HashSet<Donation>();
+            this.stories = new HashSet<Story>();
         }
 
-        [Key]
-        public override int Id { get; set; }
-
+        [Required]
         public string FirstNmae { get; set; }
 
+        [Required]
         public string LastName { get; set; }
 
+        [Required]
         public double AvilableMoneyAmount { get; set; }
 
         [Column(TypeName = "varchar(200)")]
