@@ -19,12 +19,5 @@
         public virtual DbSet<Donation> Donations { get; set; }
 
         public virtual DbSet<Story> Stories { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            base.OnModelCreating(builder);
-            builder.Entity<IdentityUser>()
-                        .ToTable("Users", "dbo");
-        }
     }
 }
