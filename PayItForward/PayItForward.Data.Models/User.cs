@@ -33,7 +33,6 @@ namespace PayItForward.Data.Models
         [StringLength(20)]
         public string LastName { get; set; }
 
-        [Required]
         public double AvilableMoneyAmount { get; set; }
 
         [Column(TypeName = "varchar(200)")]

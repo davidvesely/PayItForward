@@ -10,7 +10,6 @@ namespace PayItForward.Data.Models
 
     public class Donation
     {
-        [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid DonationId { get; set; }
 

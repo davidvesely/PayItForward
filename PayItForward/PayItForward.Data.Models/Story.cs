@@ -18,7 +18,6 @@ namespace PayItForward.Data.Models
             this.donations = new HashSet<Donation>();
         }
 
-        [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid StoryId { get; set; }
 
