@@ -14,7 +14,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PayItForward.Data.Models", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PayItForward.Data", "PayItForward.Data\PayItForward.Data.csproj", "{0D7900AC-3856-47F0-BDEE-5180A9DC1FD7}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "databse", "databse", "{90E75D40-553C-41BA-AED1-40E686584834}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "database", "database", "{8B843714-41F4-4F28-95A6-03B333D9FE91}"
+	ProjectSection(SolutionItems) = preProject
+		database\PayItForwardDatabaseDiagram.png = database\PayItForwardDatabaseDiagram.png
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,6 +40,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8B843714-41F4-4F28-95A6-03B333D9FE91} = {577BC212-5C28-461D-B68D-62ADF5A4A72D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A1B81115-88DD-4FB7-A4AE-91F735B602E5}
