@@ -20,11 +20,11 @@ namespace PayItForward.Data.Models
 
         [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid StoryId { get; set;  }
+        public Guid StoryId { get; set; }
 
         [Required]
         [StringLength(15, MinimumLength = 3)]
-        public string Title { get; set;  }
+        public string Title { get; set; }
 
         [Column(TypeName = "varchar(200)")]
         public string ImageUrl { get; set; }
@@ -40,7 +40,7 @@ namespace PayItForward.Data.Models
 
         public bool IsClosed { get; set; }
 
-        public bool IsAccepted { get; set;  }
+        public bool IsAccepted { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
@@ -49,13 +49,11 @@ namespace PayItForward.Data.Models
 
         public Category Category { get; set; }
 
-        [Required]
         public Guid CategoryId { get; set; }
 
         public User User { get; set; }
 
-        [Required]
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
 
         [Column(TypeName = "varchar(200)")]
         public string DocumentUrl { get; set; }

@@ -14,7 +14,6 @@
             this.stories = new HashSet<Story>();
         }
 
-        [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid CategoryId { get; set; }
 

@@ -4,12 +4,13 @@
 
 namespace PayItForward.Data.Models
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using Microsoft.AspNetCore.Identity;
 
-    public class User : IdentityUser
+    public class User : IdentityUser<Guid>
     {
         private readonly ICollection<Story> stories;
         private readonly ICollection<Donation> donations;
@@ -19,6 +20,9 @@ namespace PayItForward.Data.Models
             this.donations = new HashSet<Donation>();
             this.stories = new HashSet<Story>();
         }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public override Guid Id { get; set; }
 
         [Required]
         [StringLength(15)]

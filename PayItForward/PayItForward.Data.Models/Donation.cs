@@ -17,12 +17,10 @@ namespace PayItForward.Data.Models
 
         public User User { get; set; }
 
-        [Required]
-        public string UserId { get; set;  }
+        public Guid? UserId { get; set; }
 
         public Story Story { get; set; }
 
-        [Required]
         public Guid StoryId { get; set; }
 
         [Column(TypeName = "money")]
