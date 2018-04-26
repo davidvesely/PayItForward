@@ -10,6 +10,7 @@ namespace PayItForward.Data.Models
     using System.ComponentModel.DataAnnotations.Schema;
     using Microsoft.AspNetCore.Identity;
 
+    [Table("Users")]
     public class User : IdentityUser<Guid>
     {
         private readonly ICollection<Story> stories;
