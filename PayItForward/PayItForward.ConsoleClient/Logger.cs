@@ -1,34 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PayItForward.ConsoleClient
+﻿namespace PayItForward.ConsoleClient
 {
-    public class Logger
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
+
+    public abstract class Logger
     {
-        public Logger(string firstName, string lastName)
+        public Logger(string name)
         {
-            this.FirstName = firstName;
-            this.LastName = lastName;
+            this.Name = name;
+            this.Users = new List<User>()
+            {
+                new User("Viki", "Penkova"),
+                new User("Aleks", "Stoycheva"),
+                new User("Peter", "Petkov")
+            };
         }
 
-        public static int UserId
-        {
-            get
-            {
-                return UserId;
-            }
+        protected List<User> Users { get; }
 
-            set
-            {
-                UserId = UserId++;
-            }
+        protected string Name { get; private set; }
+
+        public virtual void PrintLoggerName()
+        {
+            Console.WriteLine($"Logger name:{this.Name}");
         }
 
-        public double AvilableMoneyAmount { get; set; }
-
-        protected string FirstName { get; private set; }
-
-        protected string LastName { get; private set; }
+        public abstract void PrintUserInfo();
     }
 }

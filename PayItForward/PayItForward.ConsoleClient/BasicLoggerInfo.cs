@@ -4,16 +4,19 @@
     using System.Collections.Generic;
     using System.Text;
 
-    public class BasicLoggerInfo : CommonLoggerInfo
+    public class BasicLoggerInfo : Logger
     {
-        public BasicLoggerInfo(string firstName, string lastName)
-            : base(firstName, lastName)
+        public BasicLoggerInfo(string name)
+            : base(name)
         {
         }
 
-        public string UserBasicInfo()
+        public override void PrintUserInfo()
         {
-            return string.Format("First name: {0}\nLast name:{1}\nId:{2}", this.FirstName, this.LastName, UserId);
+            foreach (var user in this.Users)
+            {
+                Console.WriteLine($"First name: {user.FirstName}\nLast name:{user.LastName}\n");
+            }
         }
     }
 }
