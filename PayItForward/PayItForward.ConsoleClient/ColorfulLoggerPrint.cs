@@ -14,12 +14,11 @@
             this.color = color;
         }
 
-        public override void PrintUserInfo()
+        public ConsoleColor GetConsoleColor { get; }
+
+        public override List<string> UserInfo()
         {
-            ConsoleColor previousColor = Console.ForegroundColor;
-            Console.ForegroundColor = this.color;
-            base.PrintUserInfo();
-            Console.ForegroundColor = previousColor;
+            return base.UserInfo();
         }
     }
 }

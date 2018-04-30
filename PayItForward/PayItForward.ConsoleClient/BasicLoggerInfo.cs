@@ -11,12 +11,15 @@
         {
         }
 
-        public override void PrintUserInfo()
+        public override List<string> UserInfo()
         {
+            List<string> userInfo = new List<string>();
             foreach (var user in this.Users)
             {
-                Console.WriteLine($"First name: {user.FirstName}\nLast name:{user.LastName}\n");
+                userInfo.Add("First name: " + user.FirstName + "\nLast name: " + user.LastName);
             }
+
+            return userInfo;
         }
     }
 }

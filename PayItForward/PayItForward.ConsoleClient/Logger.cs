@@ -17,15 +17,15 @@
             };
         }
 
-        protected List<User> Users { get; }
+        public List<User> Users { get; }
 
         protected string Name { get; private set; }
 
-        public virtual void PrintLoggerName()
+        public string LoggerName()
         {
-            Console.WriteLine($"Logger name:{this.Name}");
+            return "Logger Name: " + this.Name;
         }
 
-        public abstract void PrintUserInfo();
+        public abstract List<string> UserInfo();
     }
 }
