@@ -8,6 +8,7 @@
         public static void Main(string[] args)
         {
             ConsolePrinter printer = new ConsolePrinter();
+
             List<Logger> loggers = new List<Logger>()
             {
                 new BasicLoggerInfo("I am BasicLoggerInfo"),
@@ -17,7 +18,7 @@
 
             foreach (var logger in loggers)
             {
-                printer.Print(logger, 0);
+                printer.Print(logger);
             }
         }
     }

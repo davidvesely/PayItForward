@@ -2,21 +2,14 @@
 {
     public class User
     {
-        private static int userId;
-
-        public User(string firstName, string lastName)
+        public User(string firstName, string lastName, int age)
         {
             this.FirstName = firstName;
             this.LastName = lastName;
+            this.Age = age;
         }
 
-        public static int UserId
-        {
-            get
-            {
-                return userId++;
-            }
-        }
+        public int Age { get; }
 
         public double AvilableMoneyAmount { get; private set; }
 

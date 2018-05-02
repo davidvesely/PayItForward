@@ -1,8 +1,8 @@
-using System;
-using Xunit;
-
 namespace PayItForward.ConsoleClient.UnitTests
 {
+    using System;
+    using Xunit;
+
     public class UnitTestLogger
     {
         private BasicLoggerInfo loggerObjAsBasicLoggerInfo = new BasicLoggerInfo("BasicLoggerInfo");

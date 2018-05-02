@@ -1,22 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace PayItForward.ConsoleClient
+﻿namespace PayItForward.ConsoleClient
 {
+    using System;
+    using System.Collections.Generic;
+
     public class ConsolePrinter
     {
-        public void Print(Logger someLogger, ConsoleColor? color)
+        public void Print(Logger someLogger)
         {
-            if (someLogger.GetType() == typeof(ColorfulLoggerPrint))
-            {
-                ConsoleColor previousColor = Console.ForegroundColor;
-                Console.ForegroundColor = (someLogger as ColorfulLoggerPrint).GetConsoleColor;
-            }
+            Console.WriteLine(someLogger.LoggerName());
+            ConsoleColor previousColor = Console.ForegroundColor;
 
-            foreach (var logger in someLogger.UserInfo())
+            foreach (var logger in someLogger.UsersInfo())
             {
+                if (someLogger.GetType() == typeof(ColorfulLoggerPrint))
+                {
+                    Console.WriteLine(previousColor);
+                    Console.ForegroundColor = ConsoleColor.Red;
+                }
+
                 Console.WriteLine(logger);
             }
+
+            Console.ForegroundColor = previousColor;
         }
     }
 }

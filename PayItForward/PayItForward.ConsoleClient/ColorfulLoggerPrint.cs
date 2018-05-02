@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Text;
 
     public class ColorfulLoggerPrint : DetailedLoggerInfo
     {
@@ -16,9 +15,9 @@
 
         public ConsoleColor GetConsoleColor { get; }
 
-        public override List<string> UserInfo()
+        public override List<string> UsersInfo()
         {
-            return base.UserInfo();
+            return base.UsersInfo();
         }
     }
 }

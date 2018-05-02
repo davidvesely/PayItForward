@@ -1,8 +1,6 @@
 ﻿namespace PayItForward.ConsoleClient
 {
-    using System;
     using System.Collections.Generic;
-    using System.Text;
 
     public class BasicLoggerInfo : Logger
     {
@@ -11,15 +9,15 @@
         {
         }
 
-        public override List<string> UserInfo()
+        public override List<string> UsersInfo()
         {
-            List<string> userInfo = new List<string>();
+            List<string> userinfo = new List<string>();
             foreach (var user in this.Users)
             {
-                userInfo.Add("First name: " + user.FirstName + "\nLast name: " + user.LastName);
+                userinfo.Add("First name: " + user.FirstName + "\nLast name: " + user.LastName);
             }
 
-            return userInfo;
+            return userinfo;
         }
     }
 }

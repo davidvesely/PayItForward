@@ -1,8 +1,6 @@
 ﻿namespace PayItForward.ConsoleClient
 {
-    using System;
     using System.Collections.Generic;
-    using System.Text;
 
     public abstract class Logger
     {
@@ -11,9 +9,9 @@
             this.Name = name;
             this.Users = new List<User>()
             {
-                new User("Viki", "Penkova"),
-                new User("Aleks", "Stoycheva"),
-                new User("Peter", "Petkov")
+                new User("Viki", "Penkova", 21),
+                new User("Aleks", "Stoycheva", 24),
+                new User("Peter", "Petkov", 25)
             };
         }
 
@@ -26,6 +24,6 @@
             return "Logger Name: " + this.Name;
         }
 
-        public abstract List<string> UserInfo();
+        public abstract List<string> UsersInfo();
     }
 }
