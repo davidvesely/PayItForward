@@ -19,12 +19,10 @@ namespace PayItForward.ConsoleClient.UnitTests
         }
 
         [Fact]
-        public void TestLoggerListOfUsers()
+        public void TestIfListOfUsersIsEmpty()
         {
             Assert.NotEmpty(this.loggerObjAsColorfullLoggerPrint.Users);
-            Assert.True(this.loggerObjAsColorfullLoggerPrint.Users[0].FirstName == "Viki");
-            Assert.True(this.loggerObjAsColorfullLoggerPrint.Users[1].FirstName == "Aleks");
-            Assert.True(this.loggerObjAsColorfullLoggerPrint.Users[2].FirstName == "Peter");
+            Assert.NotNull(this.loggerObjAsBasicLoggerInfo.Users);
         }
 
         [Fact]

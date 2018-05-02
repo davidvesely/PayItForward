@@ -11,7 +11,7 @@
 
             List<Logger> loggers = new List<Logger>()
             {
-                new BasicLoggerInfo("I am BasicLoggerInfo"),
+                new BasicLoggerInfo("BasicLoggerInfo"),
                 new ColorfulLoggerPrint("ColorfulLoggerPrint", ConsoleColor.Blue),
                 new DetailedLoggerInfo("DetailedLoggerInfo")
             };
