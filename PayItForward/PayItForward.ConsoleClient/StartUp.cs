@@ -12,7 +12,7 @@
             List<Logger> loggers = new List<Logger>()
             {
                 new BasicLoggerInfo("BasicLoggerInfo"),
-                new ColorfulLoggerPrint("ColorfulLoggerPrint", ConsoleColor.Blue),
+                new ColorfulLoggerInfo("ColorfulLoggerPrint", ConsoleColor.Blue),
                 new DetailedLoggerInfo("DetailedLoggerInfo")
             };
 

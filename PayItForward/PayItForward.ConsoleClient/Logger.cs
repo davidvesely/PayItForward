@@ -1,5 +1,6 @@
 ﻿namespace PayItForward.ConsoleClient
 {
+    using System;
     using System.Collections.Generic;
 
     public abstract class Logger
@@ -13,17 +14,24 @@
                 new User("Aleks", "Stoycheva", 24),
                 new User("Peter", "Petkov", 25)
             };
+
+            if (name is null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
         }
 
-        public List<User> Users { get; }
+        public ConsoleColor GetConsoleColor { get; set; }
+
+        protected List<User> Users { get; }
 
         protected string Name { get; private set; }
 
         public string LoggerName()
         {
-            return "Logger Name: " + this.Name;
+            return $"Logger Name: {this.Name}\n";
         }
 
-        public abstract List<string> UsersInfo();
+        public abstract string UsersInfo();
     }
 }

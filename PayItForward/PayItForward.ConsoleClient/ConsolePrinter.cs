@@ -7,18 +7,17 @@
     {
         public void Print(Logger someLogger)
         {
-            Console.WriteLine(someLogger.LoggerName());
+            Console.Write(someLogger.LoggerName());
             ConsoleColor previousColor = Console.ForegroundColor;
 
             foreach (var logger in someLogger.UsersInfo())
             {
-                if (someLogger.GetType() == typeof(ColorfulLoggerPrint))
+                if (someLogger is ColorfulLoggerInfo)
                 {
-                    Console.WriteLine(previousColor);
-                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.ForegroundColor = someLogger.GetConsoleColor;
                 }
 
-                Console.WriteLine(logger);
+                Console.Write(logger);
             }
 
             Console.ForegroundColor = previousColor;
