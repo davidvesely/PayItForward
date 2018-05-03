@@ -2,6 +2,7 @@ namespace PayItForward.ConsoleClient.UnitTests
 {
     using System;
     using System.Collections.Generic;
+    using System.Text;
     using Xunit;
 
     public class LoggerShould
@@ -66,6 +67,35 @@ namespace PayItForward.ConsoleClient.UnitTests
         }
 
         [Fact]
-        public void 
+        public void TestUsersInfoFunction()
+        {
+            string expected = string.Empty;
+            StringBuilder builder = new StringBuilder();
+
+            if (this.loggerObjAsBasicLoggerInfo is BasicLoggerInfo)
+            {
+                builder.Append($"First name:Viki\nLast name:Penkova\nFirst name:Aleks\nLast name:Stoycheva\nFirst name:Peter\nLast name:Petkov\n");
+                Assert.Equal(this.loggerObjAsBasicLoggerInfo.UsersInfo(), builder.ToString());
+            }
+            else if (this.loggerObjAsDetailedLoggerInfo is DetailedLoggerInfo)
+            {
+                builder.Append($"First name:Viki\nLast name:Penkova\nAge:21\nAmounts:0\n" +
+                    $"First name:Aleks\nLast name:Stoycheva\nAge:24\nAmounts:0\n" +
+                    $"First name:Peter\nLast name:Petkov\nAge:25\nAmounts:0\n");
+                Assert.Equal(this.loggerObjAsDetailedLoggerInfo.UsersInfo(), builder.ToString());
+            }
+            else if (this.loggerObjAsColorfullLoggerInfo is ColorfulLoggerInfo)
+            {
+                builder.Append($"First name:Viki\nLast name:Penkova\nAge:21\nAmounts:0\n" +
+                    $"First name:Aleks\nLast name:Stoycheva\nAge:24\nAmounts:0\n" +
+                    $"First name:Peter\nLast name:Petkov\nAge:25\nAmounts:0\n");
+                Assert.True(this.loggerObjAsColorfullLoggerInfo.GetConsoleColor == ConsoleColor.Blue &&
+                    this.loggerObjAsColorfullLoggerInfo.UsersInfo().Equals(builder.ToString()));
+            }
+            else
+            {
+                Assert.Null(this);
+            }
+        }
     }
 }
