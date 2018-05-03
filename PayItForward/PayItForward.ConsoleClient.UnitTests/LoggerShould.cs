@@ -14,8 +14,8 @@ namespace PayItForward.ConsoleClient.UnitTests
         [Fact]
         public void TestConsoleColor()
         {
-            Assert.True(new ColorfulLoggerInfo("Anyway", ConsoleColor.Blue).GetConsoleColor
-                == (this.loggerObjAsColorfullLoggerInfo as ColorfulLoggerInfo).GetConsoleColor);
+            Assert.True(new ColorfulLoggerInfo("Anyway", ConsoleColor.Blue).ConsoleColor
+                == (this.loggerObjAsColorfullLoggerInfo as ColorfulLoggerInfo).ConsoleColor);
         }
 
         [Fact]
@@ -89,7 +89,7 @@ namespace PayItForward.ConsoleClient.UnitTests
                 builder.Append($"First name:Viki\nLast name:Penkova\nAge:21\nAmounts:0\n" +
                     $"First name:Aleks\nLast name:Stoycheva\nAge:24\nAmounts:0\n" +
                     $"First name:Peter\nLast name:Petkov\nAge:25\nAmounts:0\n");
-                Assert.True(this.loggerObjAsColorfullLoggerInfo.GetConsoleColor == ConsoleColor.Blue &&
+                Assert.True(this.loggerObjAsColorfullLoggerInfo.ConsoleColor == ConsoleColor.Blue &&
                     this.loggerObjAsColorfullLoggerInfo.UsersInfo().Equals(builder.ToString()));
             }
             else

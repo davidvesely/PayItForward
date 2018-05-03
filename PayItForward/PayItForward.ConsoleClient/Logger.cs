@@ -5,8 +5,11 @@
 
     public abstract class Logger
     {
-        public Logger(string name)
+        private readonly IConsoleWrapper consoleWrapper;
+
+        public Logger(string name, IConsoleWrapper consoleWrapper)
         {
+            this.consoleWrapper = consoleWrapper;
             this.Name = name;
             this.Users = new List<User>()
             {
@@ -21,7 +24,15 @@
             }
         }
 
-        public ConsoleColor GetConsoleColor { get; set; }
+        public ConsoleColor ConsoleColor { get; set; }
+
+        protected IConsoleWrapper ConsoleWrapper
+        {
+            get
+            {
+                return this.consoleWrapper;
+            }
+        }
 
         protected List<User> Users { get; }
 
@@ -32,6 +43,6 @@
             return $"Logger Name: {this.Name}\n";
         }
 
-        public abstract string UsersInfo();
+        public abstract void PrintUsersInfo();
     }
 }

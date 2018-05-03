@@ -7,18 +7,18 @@
     {
         public static void Main(string[] args)
         {
-            ConsolePrinter printer = new ConsolePrinter();
+            IConsoleWrapper consoleWrapper = new ConsoleWrapper();
 
             List<Logger> loggers = new List<Logger>()
             {
-                new BasicLoggerInfo("BasicLoggerInfo"),
-                new ColorfulLoggerInfo("ColorfulLoggerPrint", ConsoleColor.Blue),
-                new DetailedLoggerInfo("DetailedLoggerInfo")
+                new BasicLoggerInfo("I am BasicLoggerInfo", consoleWrapper),
+                new ColorfulLoggerInfo("ColorfulLoggerPrint", ConsoleColor.Blue, consoleWrapper),
+                new DetailedLoggerInfo("DetailedLoggerInfo", consoleWrapper)
             };
 
             foreach (var logger in loggers)
             {
-                printer.Print(logger);
+                logger.PrintUsersInfo();
             }
         }
     }

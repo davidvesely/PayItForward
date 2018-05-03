@@ -1,25 +1,22 @@
 ﻿namespace PayItForward.ConsoleClient
 {
+    using System;
     using System.Collections.Generic;
     using System.Text;
 
     public class DetailedLoggerInfo : BasicLoggerInfo
     {
-        public DetailedLoggerInfo(string name)
-            : base(name)
+        public DetailedLoggerInfo(string name, IConsoleWrapper consoleWrapper)
+            : base(name, consoleWrapper)
         {
         }
 
-        public override string UsersInfo()
+        public override void PrintUsersInfo()
         {
-            StringBuilder builder = new StringBuilder();
-
             foreach (var user in this.Users)
             {
-               builder.Append($"First name:{user.FirstName}\nLast name:{user.LastName}\nAge:{user.Age}\nAmounts:{user.AvilableMoneyAmount}\n");
+                this.ConsoleWrapper.Print($"First name:{user.FirstName}\nLast name:{user.LastName}\nAge:{user.Age}\nAmounts:{user.AvilableMoneyAmount}\n");
             }
-
-            return builder.ToString();
         }
     }
 }

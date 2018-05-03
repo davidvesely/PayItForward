@@ -5,15 +5,18 @@
 
     public class ColorfulLoggerInfo : DetailedLoggerInfo
     {
-        public ColorfulLoggerInfo(string name, ConsoleColor color)
-            : base(name)
+        public ColorfulLoggerInfo(string name, ConsoleColor color, IConsoleWrapper consoleWrapper)
+            : base(name, consoleWrapper)
         {
-            this.GetConsoleColor = color;
+            this.ConsoleColor = color;
         }
 
-        public override string UsersInfo()
+        public override void PrintUsersInfo()
         {
-            return base.UsersInfo();
+            ConsoleColor previousColor = this.ConsoleWrapper.GetCurrentConsoleColor();
+            this.ConsoleWrapper.ChangeColor(this.ConsoleColor);
+            base.PrintUsersInfo();
+            this.ConsoleWrapper.ChangeColor(previousColor);
         }
     }
 }
