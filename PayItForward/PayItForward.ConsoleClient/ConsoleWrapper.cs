@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PayItForward.ConsoleClient
+﻿namespace PayItForward.ConsoleClient
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
+
     public class ConsoleWrapper : IConsoleWrapper
     {
         public void Print(string text)
         {
-            Console.WriteLine(text);
+            Console.Write(text);
         }
 
         public void ChangeColor(ConsoleColor color)

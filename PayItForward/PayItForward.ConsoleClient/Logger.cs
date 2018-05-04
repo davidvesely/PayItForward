@@ -11,13 +11,6 @@
         {
             this.consoleWrapper = consoleWrapper;
             this.Name = name;
-            this.Users = new List<User>()
-            {
-                new User("Viki", "Penkova", 21),
-                new User("Aleks", "Stoycheva", 24),
-                new User("Peter", "Petkov", 25)
-            };
-
             if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
@@ -43,6 +36,19 @@
             return $"Logger Name: {this.Name}\n";
         }
 
-        public abstract void PrintUsersInfo();
+        public abstract void PrintInfo(ILoggable loggable);
+
+        public void PrintInfoList(List<ILoggable> loggables)
+        {
+            if (loggables is null || loggables.Count == 0)
+            {
+                throw new ArgumentNullException("No loggers");
+            }
+
+            foreach (var loggable in loggables)
+            {
+                this.PrintInfo(loggable);
+            }
+        }
     }
 }

@@ -11,12 +11,9 @@
         {
         }
 
-        public override void PrintUsersInfo()
+        public override void PrintInfo(ILoggable loggable)
         {
-            foreach (var user in this.Users)
-            {
-                this.ConsoleWrapper.Print($"First name:{user.FirstName}\nLast name:{user.LastName}\n");
-            }
+            this.ConsoleWrapper.Print(loggable.LogBasicText);
         }
     }
 }

@@ -8,6 +8,12 @@
         public static void Main(string[] args)
         {
             IConsoleWrapper consoleWrapper = new ConsoleWrapper();
+            List<ILoggable> users = new List<ILoggable>()
+             {
+                new User("Viki", "Penkova", 21),
+                new User("Aleks", "Stoycheva", 24),
+                new User("Peter", "Petkov", 25)
+             };
 
             List<Logger> loggers = new List<Logger>()
             {
@@ -18,7 +24,7 @@
 
             foreach (var logger in loggers)
             {
-                logger.PrintUsersInfo();
+                logger.PrintInfoList(users);
             }
         }
     }
