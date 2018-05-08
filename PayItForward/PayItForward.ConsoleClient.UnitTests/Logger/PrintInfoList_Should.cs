@@ -29,7 +29,7 @@ namespace PayItForward.ConsoleClient.UnitTests.Logger
                 new ConsoleClient.User("Aleks", "Stoycheva", 25)
             };
             StringBuilder expected = new StringBuilder();
-            
+
             using (StringWriter sw = new StringWriter())
             {
                 Console.SetOut(sw);
