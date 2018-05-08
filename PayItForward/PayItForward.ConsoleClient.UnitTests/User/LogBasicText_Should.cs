@@ -14,7 +14,10 @@
         [Fact]
         public void ReturnConcreteString()
         {
+            // Arrange
             string expected = "First name:Viki\nLast name:Penkova\n";
+
+            // Assert
             Assert.Equal(expected, this.loggable.LogBasicText);
         }
     }

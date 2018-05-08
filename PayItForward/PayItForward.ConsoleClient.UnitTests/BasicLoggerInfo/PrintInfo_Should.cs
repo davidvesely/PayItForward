@@ -1,30 +1,30 @@
 ﻿namespace PayItForward.ConsoleClient
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
+    using Moq;
     using Xunit;
 
     public class PrintInfo_Should
     {
-        private IConsoleWrapper consoleWrapper;
+        private readonly Mock<IConsoleWrapper> consoleWrapper;
+        private readonly BasicLoggerInfo basicLoggerInfo;
 
         public PrintInfo_Should()
         {
-            this.consoleWrapper = new ConsoleWrapper();
+            this.consoleWrapper = new Mock<IConsoleWrapper>();
+            this.basicLoggerInfo = new BasicLoggerInfo("BasicLoggerInfo", this.consoleWrapper.Object);
         }
 
         [Fact]
-        public void NotAcceptEmptyListAsArgument()
+        public void PrintBasicInfo()
         {
-            Assert.Throws<ArgumentNullException>(() => new BasicLoggerInfo(null, this.consoleWrapper).PrintInfoList(new List<ILoggable>()));
-        }
+            // Arrange
+            ILoggable user = new User("Viki", "Penkova", 21);
 
-        [Fact]
-        public void NotAcceptNullArgument()
-        {
-            Assert.Throws<ArgumentNullException>(() => new BasicLoggerInfo(null, this.consoleWrapper).PrintInfoList(null));
-        }
+            // Act
+            this.basicLoggerInfo.PrintInfo(user);
 
+            // Assert
+            this.consoleWrapper.Verify(x => x.Print(user.LogBasicText), Times.Once);
+        }
     }
 }
