@@ -1,6 +1,5 @@
 ﻿namespace PayItForward.ConsoleClient
 {
-    using System;
     using Xunit;
 
     public class LogBasicText_Should

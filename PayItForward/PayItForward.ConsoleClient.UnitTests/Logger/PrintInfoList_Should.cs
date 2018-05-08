@@ -1,48 +1,48 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace PayItForward.ConsoleClient.UnitTests.Logger
+﻿namespace PayItForward.ConsoleClient.UnitTests.Logger
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
-    using System.Text;
+    using Moq;
     using Xunit;
 
     public class PrintInfoList_Should
     {
+        private readonly ConsoleClient.Logger basicLoggerInfo;
         private List<ILoggable> loggables;
-        private IConsoleWrapper consoleWrapper;
+        private Mock<IConsoleWrapper> consoleWrapperMock;
 
         public PrintInfoList_Should()
         {
             this.loggables = new List<ILoggable>();
-            this.consoleWrapper = new ConsoleWrapper();
-    }
+            this.consoleWrapperMock = new Mock<IConsoleWrapper>();
+            this.basicLoggerInfo = new BasicLoggerInfo("BasicLoggerInfo", this.consoleWrapperMock.Object);
+        }
 
         [Fact]
         public void PrintConcreteString()
         {
-            List<PayItForward.ConsoleClient.ILoggable> users = new List<PayItForward.ConsoleClient.ILoggable>()
+            // Arrange
+            ConsoleClient.ILoggable firstUser = new ConsoleClient.User("Viki", "Penkova", 21);
+            ConsoleClient.ILoggable secondUser = new ConsoleClient.User("Aleks", "Stoycheva", 25);
+            List<PayItForward.ConsoleClient.ILoggable> users = new List<PayItForward.ConsoleClient.ILoggable>
             {
-                new ConsoleClient.User("Viki", "Penkova", 21),
-                new ConsoleClient.User("Aleks", "Stoycheva", 25)
+                firstUser,
+                secondUser
             };
-            StringBuilder expected = new StringBuilder();
 
-            using (StringWriter sw = new StringWriter())
-            {
-                Console.SetOut(sw);
-                ConsoleClient.Logger basicLoggerInfo = new BasicLoggerInfo("BasicLoggerInfo", this.consoleWrapper);
-                this.consoleWrapper.Print("First name:Viki\nLast name:Penkova\nFirst name:Aleks\nLast name:Stoycheva\n");
+            // Act
+            this.basicLoggerInfo.PrintInfoList(users);
 
-                foreach (var user in users)
-                {
-                    expected.Append(user.LogBasicText);
-                }
+            // Assert
+            this.consoleWrapperMock.Verify(x => x.Print(firstUser.LogBasicText), Times.Once);
+            this.consoleWrapperMock.Verify(x => x.Print(secondUser.LogBasicText), Times.Once);
+        }
 
-                Assert.Equal(expected.ToString(), sw.ToString());
-            }
+        [Fact]
+        public void ThrowExceptionIfListIsNull()
+        {
+            // Assert
+            Assert.Throws<ArgumentNullException>(() => this.basicLoggerInfo.PrintInfoList(null));
         }
     }
 }

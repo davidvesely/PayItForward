@@ -1,7 +1,7 @@
-﻿using Xunit;
-
-namespace PayItForward.ConsoleClient
+﻿namespace PayItForward.ConsoleClient
 {
+    using Xunit;
+
     public class LogDetailedText_Should
     {
         private ILoggable loggable;
