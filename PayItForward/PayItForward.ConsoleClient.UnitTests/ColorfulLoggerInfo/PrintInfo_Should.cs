@@ -18,13 +18,16 @@ namespace PayItForward.ConsoleClient.UnitTests.ColorfulLoggerInfo
         }
 
         [Fact]
-        public void ChangeColorAndPrintDetailedInfo()
+        public void ChangeColor()
         {
             // Arrange 
+            ConsoleColor previousColor = this.mockConsoleColor.Object.GetCurrentConsoleColor();
 
             // Act
+            this.colorfulLoggerInfo.PrintInfo(this.user);
 
             // Assert
+            Assert.NotEqual(previousColor, this.colorfulLoggerInfo.ConsoleColor);
 
         }
     }
