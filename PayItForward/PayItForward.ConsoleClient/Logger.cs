@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using EnsureThat;
 
     public abstract class Logger
     {
@@ -11,10 +12,12 @@
         {
             this.consoleWrapper = consoleWrapper;
             this.Name = name;
-            if (name is null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
+
+            // if (name is null)
+            // {
+            //    throw new ArgumentNullException(nameof(name));
+            // }
+            Ensure.That(name).IsNotNullOrEmpty();
         }
 
         public ConsoleColor ConsoleColor { get; set; }

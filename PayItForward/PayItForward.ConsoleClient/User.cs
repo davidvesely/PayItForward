@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EnsureThat;
+using System;
 
 namespace PayItForward.ConsoleClient
 {
@@ -10,10 +11,13 @@ namespace PayItForward.ConsoleClient
             this.LastName = lastName;
             this.Age = age;
 
-            if (firstName is null || lastName is null || age == 0)
-            {
-                throw new ArgumentNullException("Some of the constructor arguments is null!");
-            }
+            // if (firstName is null || lastName is null || age == 0)
+            // {
+            //    throw new ArgumentNullException("Some of the constructor arguments is null!");
+            // }
+            Ensure.That(firstName).IsNotNullOrEmpty();
+            Ensure.That(lastName).IsNotNullOrEmpty();
+            Ensure.That(age).IsInRange(0, 110);
         }
 
         public string LogBasicText
