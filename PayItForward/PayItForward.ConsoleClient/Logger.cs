@@ -13,10 +13,6 @@
             this.consoleWrapper = consoleWrapper;
             this.Name = name;
 
-            // if (name is null)
-            // {
-            //    throw new ArgumentNullException(nameof(name));
-            // }
             Ensure.That(name).IsNotNullOrEmpty();
         }
 
