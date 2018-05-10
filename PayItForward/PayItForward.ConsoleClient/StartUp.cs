@@ -1,5 +1,6 @@
 ﻿namespace PayItForward.ConsoleClient
 {
+    using PayItForward.Data;
     using System;
     using System.Collections.Generic;
 
@@ -25,6 +26,13 @@
             foreach (var logger in loggers)
             {
                 logger.PrintInfoList(users);
+            }
+
+            // Seeding data from database part
+            using (var context = new PayItForwardContextFactory().CreateDbContext())
+            {
+                var usersFromDb = context.Users.FindAsync();
+                Console.WriteLine(usersFromDb.ToString());
             }
         }
     }
