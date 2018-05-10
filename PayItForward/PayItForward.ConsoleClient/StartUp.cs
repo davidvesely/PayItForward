@@ -31,8 +31,7 @@
             // Seeding data from database part
             using (var context = new PayItForwardContextFactory().CreateDbContext())
             {
-                var usersFromDb = context.Users.FindAsync();
-                Console.WriteLine(usersFromDb.ToString());
+                DbInitializer.Initialize(context);
             }
         }
     }

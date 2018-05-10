@@ -26,4 +26,10 @@
     <ProjectReference Include="..\PayItForward.Data\PayItForward.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
