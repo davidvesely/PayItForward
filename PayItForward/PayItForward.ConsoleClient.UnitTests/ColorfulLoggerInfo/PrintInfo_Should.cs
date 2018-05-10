@@ -33,7 +33,7 @@ namespace PayItForward.ConsoleClient.UnitTests.ColorfulLoggerInfo
         }
 
         [Fact]
-        public void CallPrintMethod_Of_ParentClass_With_LogDetailedText()
+        public void CallPrintMethod_With_LogDetailedText()
         {
             // Act
             this.colorfulLoggerInfo.PrintInfo(this.user);
