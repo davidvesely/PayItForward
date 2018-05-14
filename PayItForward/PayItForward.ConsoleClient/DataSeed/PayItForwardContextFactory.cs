@@ -7,8 +7,6 @@
 
     public class PayItForwardContextFactory : IDesignTimeDbContextFactory<PayItForwardDbContext>
     {
-        private static string connectionString;
-
         public PayItForwardDbContext CreateDbContext()
         {
             return this.CreateDbContext(null);
