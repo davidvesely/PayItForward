@@ -11,8 +11,8 @@ using System;
 namespace PayItForward.Data.Migrations
 {
     [DbContext(typeof(PayItForwardDbContext))]
-    [Migration("20180510142849_Initial")]
-    partial class Initial
+    [Migration("20180515132842_SeedingRoles")]
+    partial class SeedingRoles
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

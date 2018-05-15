@@ -8,7 +8,6 @@
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using PayItForward.Common;
-    using PayItForward.ConsoleClient.DataSeed;
     using PayItForward.Data;
     using PayItForward.Data.Models;
 
@@ -19,20 +18,23 @@
         private List<PayItForward.Data.Models.Category> categories;
         private List<PayItForward.Data.Models.Donation> donations;
 
-        public async Task Initialize(PayItForwardDbContext context, IServiceProvider serviceProvider)
+        public void Initialize(PayItForwardDbContext context, IServiceProvider serviceProvider)
         {
-            // context.Database.EnsureCreated();
-            await this.SeedRoleAdmin(context, serviceProvider);
-            await this.SeedRoleUser(context, serviceProvider);
+            context.Database.EnsureCreated();
+            this.SeedUsers(context);
+            this.AddUserRole(context);
+            this.SeedUsersToRole(context);
+            this.AddAdminRole(context);
+            this.SeedAdmin(context);
 
             // this.SeedStories(context);
             // this.SeedCategories(context);
             // this.SeedDonations(context);
         }
 
-        private async Task SeedRoleAdmin(PayItForwardDbContext context, IServiceProvider serviceProvider)
+        private void AddAdminRole(PayItForwardDbContext context)
         {
-            if (!context.Roles.Any())
+            if (!context.Roles.Any(r => r.Name == GlobalConstants.AdminRole))
             {
                 var adminRole = new IdentityRole<Guid>
                 {
@@ -40,7 +42,65 @@
                 };
 
                 context.Roles.Add(adminRole);
+                context.SaveChangesAsync();
+            }
+        }
 
+        private void AddUserRole(PayItForwardDbContext context)
+        {
+            if (!context.Roles.Any(r => r.Name == GlobalConstants.UserRole))
+            {
+                var userRole = new IdentityRole<Guid>
+                {
+                    Name = GlobalConstants.UserRole
+                };
+
+                context.Roles.Add(userRole);
+                context.SaveChangesAsync();
+            }
+        }
+
+        private List<PayItForward.Data.Models.User> SeedUsers(PayItForwardDbContext context)
+        {
+            try
+            {
+                if (!context.Roles.Any(r => r.Name == GlobalConstants.UserRole))
+                    {
+                    this.users = new List<PayItForward.Data.Models.User>()
+                    {
+                        new PayItForward.Data.Models.User
+                        {
+                            FirstName = "Aleksandra",
+                            LastName = "Stoicheva",
+                        },
+                         new PayItForward.Data.Models.User
+                         {
+                             FirstName = "Peter",
+                             LastName = "Petkov"
+                         },
+                         new PayItForward.Data.Models.User
+                         {
+                             FirstName = "Single",
+                             LastName = "Mingle"
+                         }
+                    };
+
+                    context.Users.AddRange(this.users);
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+            return this.users;
+        }
+
+        private void SeedAdmin(PayItForwardDbContext context)
+        {
+            if (!context.UserRoles.Any())
+            {
                 var adminViki = new PayItForward.Data.Models.User
                 {
                     FirstName = "Viktoria",
@@ -51,56 +111,32 @@
 
                 context.UserRoles.Add(new IdentityUserRole<Guid>()
                 {
-                    RoleId = adminRole.Id,
+                    RoleId = context.Roles.FirstOrDefault<IdentityRole<Guid>>().Id,
                     UserId = adminViki.Id
                 });
-            }
 
-            context.SaveChanges();
+                context.SaveChangesAsync();
+            }
         }
 
-        private async Task SeedRoleUser(PayItForwardDbContext context, IServiceProvider serviceProvider)
+        // Call after SeedUsers
+        private void SeedUsersToRole(PayItForwardDbContext context)
         {
-            if (!context.Roles.Any())
-            {
-                var userRole = new IdentityRole<Guid>
-                {
-                    Name = GlobalConstants.UserRole
-                };
-                context.Roles.Add(userRole);
+            var userRole = context.Roles.FirstOrDefault<IdentityRole<Guid>>(r => r.Name == GlobalConstants.UserRole);
 
-                this.users = new List<PayItForward.Data.Models.User>()
-             {
-                new PayItForward.Data.Models.User
-                {
-                    FirstName = "Aleksandra",
-                    LastName = "Stoicheva",
-                },
-                 new PayItForward.Data.Models.User
-                 {
-                     FirstName = "Peter",
-                     LastName = "Petkov"
-                 },
-                 new PayItForward.Data.Models.User
-                 {
-                     FirstName = "Single",
-                     LastName = "Mingle"
-                 }
-             };
-                var userStore = new UserStore<IdentityUser<Guid>, IdentityRole<Guid>, PayItForwardDbContext, Guid>(context);
+            if (userRole.Name == GlobalConstants.UserRole)
+            {
                 foreach (PayItForward.Data.Models.User user in this.users)
                 {
-                    context.Users.Add(user);
-                    await userStore.CreateAsync(user);
                     context.UserRoles.Add(new IdentityUserRole<Guid>()
                     {
                         RoleId = userRole.Id,
                         UserId = user.Id
                     });
                 }
-            }
 
-            context.SaveChanges();
+                context.SaveChanges();
+            }
         }
 
         private void SeedStories(PayItForwardDbContext context)

@@ -1,12 +1,11 @@
 ﻿namespace PayItForward.ConsoleClient
 {
-    using Microsoft.AspNetCore.Identity;
-    using Microsoft.Extensions.DependencyInjection;
-    using PayItForward.ConsoleClient.DataSeed;
-    using PayItForward.Data;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.Extensions.DependencyInjection;
+    using PayItForward.Data;
 
     public class StartUp
     {
@@ -18,7 +17,7 @@
             IServiceCollection services = new ServiceCollection();
             var serviceProvider = services.BuildServiceProvider();
 
-            services.AddIdentity<User, IdentityRole>();
+            services.AddIdentity<PayItForward.Data.Models.User, IdentityRole>();
 
             List<ILoggable> users = new List<ILoggable>()
              {
@@ -43,7 +42,7 @@
             using (var context = new PayItForwardContextFactory().CreateDbContext())
             {
                 DbInitializer initializer = new DbInitializer();
-                initializer.Initialize(context, serviceProvider).Wait();
+                initializer.Initialize(context, serviceProvider);
             }
         }
     }
