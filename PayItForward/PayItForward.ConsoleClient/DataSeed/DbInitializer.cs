@@ -20,7 +20,7 @@
 
         public void Initialize(PayItForwardDbContext context, IServiceProvider serviceProvider)
         {
-            context.Database.EnsureCreated();
+            // context.Database.EnsureCreated();
             this.AddUserRole(context);
 
             this.SeedUsers(context);
@@ -35,9 +35,9 @@
 
             this.SeedCategories(context);
 
-            // this.SeedStories(context, this.SeedCategories(context));
+            this.SeedStories(context, this.SeedCategories(context));
 
-            // this.SeedDonations(context);
+            this.SeedDonations(context);
         }
 
         private void AddUserRole(PayItForwardDbContext context)
@@ -58,6 +58,12 @@
 
         private List<PayItForward.Data.Models.User> SeedUsers(PayItForwardDbContext context)
         {
+            if (context.Users.Any())
+            {
+                this.users = context.Users.ToList();
+                return this.users;
+            }
+
             try
             {
                 if (context.Roles.Any(r => r.Name == GlobalConstants.UserRole))
@@ -242,48 +248,54 @@
 
         private void SeedStories(PayItForwardDbContext context, List<Category> categories)
         {
+            this.stories = context.Stories.ToList();
             if (!context.Stories.Any())
             {
                 this.stories = new List<PayItForward.Data.Models.Story>()
+             {
+                new PayItForward.Data.Models.Story
                 {
-                    new PayItForward.Data.Models.Story
-                    {
-                        Title = "Education support",
-                        IsClosed = false,
-                        Category = categories.ElementAtOrDefault<Category>(0),
-                        IsRemoved = false, GoalAmount = 900,
-                        IsAccepted = true,
-                        User = this.users.ElementAtOrDefault<PayItForward.Data.Models.User>(0)
-                    },
-                    new PayItForward.Data.Models.Story
-                    {
-                        Title = "Help me!",
-                        IsClosed = false,
-                        Category = categories.ElementAtOrDefault<Category>(1),
-                        IsRemoved = false,
-                        GoalAmount = 1500,
-                        IsAccepted = true,
-                        User = this.users.ElementAtOrDefault<PayItForward.Data.Models.User>(1)
-                    },
-                    new PayItForward.Data.Models.Story
-                    {
-                        Title = "Sponsor me!",
-                        IsClosed = false,
-                        Category = categories.ElementAtOrDefault<Category>(2),
-                        IsRemoved = false,
-                        GoalAmount = 700,
-                        IsAccepted = true,
-                        User = this.users.ElementAtOrDefault<PayItForward.Data.Models.User>(2)
-                    }
-                };
-
-                foreach (PayItForward.Data.Models.Story story in this.stories)
+                    Title = "Help me!",
+                    IsClosed = false,
+                    UserId = this.users.FirstOrDefault(u => u.FirstName == "Aleksandra").Id,
+                    CategoryId = this.categories.FirstOrDefault(c => c.Name == "Health").CategoryId,
+                    IsRemoved = false,
+                    GoalAmount = 1500,
+                    IsAccepted = true,
+                    CollectedAmount = 0,
+                    ExpirationDate = new DateTime(2018, 9, 9, 16, 5, 7, 123)
+                },
+                new PayItForward.Data.Models.Story
                 {
-                    context.Stories.Add(story);
+                    Title = "Education support",
+                    IsClosed = false,
+                    UserId = this.users.FirstOrDefault(u => u.FirstName == "Viktoria").Id,
+                    CategoryId = this.categories.FirstOrDefault(c => c.Name == "Education").CategoryId,
+                    IsRemoved = false,
+                    GoalAmount = 900,
+                    IsAccepted = true,
+                    DateCreated = DateTime.Now,
+                    CollectedAmount = 30,
+                    ExpirationDate = new DateTime(2018, 9, 9, 16, 5, 7, 123)
+                },
+                new PayItForward.Data.Models.Story
+                {
+                    Title = "Sponsor me!",
+                    IsClosed = false,
+                    UserId = this.users.FirstOrDefault(u => u.FirstName == "Single").Id,
+                    CategoryId = this.categories.FirstOrDefault(c => c.Name == "Sponsorship").CategoryId,
+                    IsRemoved = false,
+                    GoalAmount = 700,
+                    IsAccepted = true,
+                    DateCreated = DateTime.Now,
+                    CollectedAmount = 80,
+                    ExpirationDate = new DateTime(2018, 9, 9, 16, 5, 7, 123)
                 }
-
-                context.SaveChanges();
+             };
+                context.Stories.AddRange(this.stories);
             }
+
+            context.SaveChanges();
         }
 
         private void SeedDonations(PayItForwardDbContext context)
@@ -295,17 +307,20 @@
                     new PayItForward.Data.Models.Donation
                     {
                         Amount = 300,
-                        User = this.users.ElementAtOrDefault<PayItForward.Data.Models.User>(0)
+                        UserId = this.users.ElementAtOrDefault<PayItForward.Data.Models.User>(0).Id,
+                        StoryId = this.stories.ElementAtOrDefault<PayItForward.Data.Models.Story>(0).StoryId
                     },
                     new PayItForward.Data.Models.Donation
                     {
                         Amount = 800,
-                        User = this.users.ElementAtOrDefault<PayItForward.Data.Models.User>(1)
+                        UserId = this.users.ElementAtOrDefault<PayItForward.Data.Models.User>(1).Id,
+                        StoryId = this.stories.ElementAtOrDefault<PayItForward.Data.Models.Story>(0).StoryId
                     },
                     new PayItForward.Data.Models.Donation
                     {
                         Amount = 3006,
-                        User = this.users.ElementAtOrDefault<PayItForward.Data.Models.User>(2)
+                        User = this.users.ElementAtOrDefault<PayItForward.Data.Models.User>(2),
+                        StoryId = this.stories.ElementAtOrDefault<PayItForward.Data.Models.Story>(1).StoryId
                     }
                 };
                 foreach (PayItForward.Data.Models.Donation donation in this.donations)
