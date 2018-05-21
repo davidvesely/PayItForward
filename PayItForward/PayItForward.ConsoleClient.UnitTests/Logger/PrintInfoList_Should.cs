@@ -22,8 +22,8 @@
         public void PrintConcreteString()
         {
             // Arrange
-            ConsoleClient.ILoggable firstUser = new ConsoleClient.User("Viki", "Penkova", 21);
-            ConsoleClient.ILoggable secondUser = new ConsoleClient.User("Aleks", "Stoycheva", 25);
+            ConsoleClient.ILoggable firstUser = new ConsoleClient.User("Viki", "Penkova", Guid.NewGuid());
+            ConsoleClient.ILoggable secondUser = new ConsoleClient.User("Aleks", "Stoycheva", Guid.NewGuid());
             List<PayItForward.ConsoleClient.ILoggable> users = new List<PayItForward.ConsoleClient.ILoggable>
             {
                 firstUser,

@@ -14,7 +14,7 @@ namespace PayItForward.ConsoleClient.UnitTests.ColorfulLoggerInfo
         public PrintInfo_Should()
         {
             this.consoleWrapperMock = new Mock<IConsoleWrapper>();
-            this.user = new ConsoleClient.User("Deni", "Doncheva", 23);
+            this.user = new ConsoleClient.User("Deni", "Doncheva", Guid.NewGuid());
             this.colorfulLoggerInfo = new ConsoleClient.ColorfulLoggerInfo("ColorfulLoggerInfo", ConsoleColor.Cyan, this.consoleWrapperMock.Object);
         }
 

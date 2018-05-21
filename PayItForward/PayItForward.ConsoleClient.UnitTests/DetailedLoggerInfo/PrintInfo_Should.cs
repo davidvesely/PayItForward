@@ -2,6 +2,7 @@
 namespace PayItForward.ConsoleClient.UnitTests.DetailedLoggerInfo
 {
     using Moq;
+    using System;
     using Xunit;
 
     public class PrintInfo_Should
@@ -19,7 +20,7 @@ namespace PayItForward.ConsoleClient.UnitTests.DetailedLoggerInfo
         public void PrintBasicInfo()
         {
             // Arrange
-            ILoggable user = new ConsoleClient.User("Viki", "Penkova", 21);
+            ILoggable user = new ConsoleClient.User("Viki", "Penkova", Guid.NewGuid());
 
             // Act
             this.detailedLoggerInfo.PrintInfo(user);

@@ -15,7 +15,7 @@ namespace PayItForward.ConsoleClient.UnitTests.User
         [Fact]
         public void NotAcceptEmptyNameInConstructor()
         {
-            Assert.Throws<ArgumentNullException>(() => new PayItForward.ConsoleClient.User(null, null, 0));
+            Assert.Throws<ArgumentNullException>(() => new PayItForward.ConsoleClient.User(null, null, Guid.NewGuid()));
         }
     }
 }
