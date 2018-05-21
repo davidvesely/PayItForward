@@ -23,32 +23,31 @@
 
             services.AddIdentity<PayItForward.Data.Models.User, IdentityRole>();
 
-            List<ILoggable> users = new List<ILoggable>()
-             {
-                new User("Viki", "Penkova", new Guid("viki")),
-                new User("Aleks", "Stoycheva", new Guid("aleks")),
-                new User("Peter", "Petkov", new Guid("peter"))
-             };
+            // List<ILoggable> users = new List<ILoggable>()
+            // {
+            //    new User("Viki", "Penkova", new Guid("viki")),
+            //    new User("Aleks", "Stoycheva", new Guid("aleks")),
+            //    new User("Peter", "Petkov", new Guid("peter"))
+            // };
 
-            List<Logger> loggers = new List<Logger>()
-             {
-                new BasicLoggerInfo("I am BasicLoggerInfo", consoleWrapper),
-                new ColorfulLoggerInfo("ColorfulLoggerInfo", ConsoleColor.Blue, consoleWrapper),
-                new DetailedLoggerInfo("DetailedLoggerInfo", consoleWrapper)
-             };
+            // List<Logger> loggers = new List<Logger>()
+            // {
+            //    new BasicLoggerInfo("I am BasicLoggerInfo", consoleWrapper),
+            //    new ColorfulLoggerInfo("ColorfulLoggerInfo", ConsoleColor.Blue, consoleWrapper),
+            //    new DetailedLoggerInfo("DetailedLoggerInfo", consoleWrapper)
+            // };
 
-            foreach (var logger in loggers)
-            {
-                logger.PrintInfoList(users);
-            }
+            // foreach (var logger in loggers)
+            // {
+            //    logger.PrintInfoList(users);
+            // }
 
             // Seeding data from database
-
             using (var context = new PayItForwardContextFactory().CreateDbContext())
             {
-                // DbInitializer initializer = new DbInitializer();
+                DbInitializer initializer = new DbInitializer();
 
-                // initializer.Initialize(context, serviceProvider);
+                initializer.Initialize(context, serviceProvider);
             }
 
             // Logging data from database

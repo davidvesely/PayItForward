@@ -43,6 +43,11 @@
 
         private void AddUserRole(PayItForwardDbContext context)
         {
+            if (context.Users.Any())
+            {
+                return;
+            }
+
             if (context.Roles.Any(r => r.Name == GlobalConstants.UserRole))
             {
                 return;
@@ -104,13 +109,13 @@
 
         private void SeedUsersToRole(PayItForwardDbContext context)
         {
-            // Don't seed if there are no roles
-            if (!context.Roles.Any())
+            if (!context.Users.Any())
             {
                 return;
             }
 
-            if (!context.Users.Any())
+            // Don't seed if there are no roles
+            if (!context.Roles.Any())
             {
                 return;
             }
@@ -165,6 +170,13 @@
         {
             // Don't add role if there are no users
             if (!context.Users.Any())
+            {
+                this.users = context.Users.ToList();
+                return this.users;
+            }
+
+            // Don't add admin user if there is already a user with this role
+            if (context.UserRoles.Any(a => a.RoleId == context.Roles.SingleOrDefault(r => r.Name == GlobalConstants.AdminRole).Id))
             {
                 this.users = context.Users.ToList();
                 return this.users;
@@ -227,7 +239,8 @@
 
         private List<Category> SeedCategories(PayItForwardDbContext context)
         {
-            if (!context.Categories.Any())
+            // iF there there are categories in the database do not seed more
+            if (context.Categories.Any())
             {
                 this.categories = context.Categories.ToList();
                 return this.categories;
