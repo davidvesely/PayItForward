@@ -13,7 +13,14 @@
 
         public override void PrintInfo(ILoggable loggable)
         {
-            this.ConsoleWrapper.Print(loggable.LogBasicText);
+            try
+            {
+                this.ConsoleWrapper.Print(loggable.LogBasicText);
+            }
+            catch (Exception ex)
+            {
+                this.ConsoleWrapper.Print(ex.Message);
+            }
         }
     }
 }
