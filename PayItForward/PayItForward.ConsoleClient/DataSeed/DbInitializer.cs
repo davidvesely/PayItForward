@@ -20,7 +20,8 @@
 
         public void Initialize(PayItForwardDbContext context, IServiceProvider serviceProvider)
         {
-            // context.Database.EnsureCreated();
+            context.Database.EnsureCreated();
+
             this.AddUserRole(context);
 
             this.SeedUsers(context);
@@ -68,30 +69,27 @@
             {
                 if (context.Roles.Any(r => r.Name == GlobalConstants.UserRole))
                 {
-                    if (!context.Users.Any())
+                    this.users = new List<PayItForward.Data.Models.User>()
                     {
-                        this.users = new List<PayItForward.Data.Models.User>()
+                        new PayItForward.Data.Models.User
                         {
+                            FirstName = "Aleksandra",
+                            LastName = "Stoicheva",
+                        },
                             new PayItForward.Data.Models.User
                             {
-                                FirstName = "Aleksandra",
-                                LastName = "Stoicheva",
+                                FirstName = "Peter",
+                                LastName = "Petkov"
                             },
-                             new PayItForward.Data.Models.User
-                             {
-                                 FirstName = "Peter",
-                                 LastName = "Petkov"
-                             },
-                             new PayItForward.Data.Models.User
-                             {
-                                 FirstName = "Single",
-                                 LastName = "Mingle"
-                             }
-                        };
+                            new PayItForward.Data.Models.User
+                            {
+                                FirstName = "Single",
+                                LastName = "Mingle"
+                            }
+                    };
 
-                        context.Users.AddRange(this.users);
-                        context.SaveChanges();
-                    }
+                    context.Users.AddRange(this.users);
+                    context.SaveChanges();
                 }
 
                 this.users = context.Users.ToList();
@@ -106,6 +104,7 @@
 
         private void SeedUsersToRole(PayItForwardDbContext context)
         {
+            // Don't seed if there are no roles
             if (!context.Roles.Any())
             {
                 return;
@@ -140,6 +139,13 @@
 
         private void AddAdminRole(PayItForwardDbContext context)
         {
+            // Don't add role if there are no users
+            if (!context.Users.Any())
+            {
+                return;
+            }
+
+            // If there is already admin don't add one
             if (context.Roles.Any(r => r.Name == GlobalConstants.AdminRole))
             {
                 return;
@@ -151,28 +157,37 @@
             };
 
             context.Roles.Add(adminRole);
+
             context.SaveChanges();
         }
 
         private List<PayItForward.Data.Models.User> SeedAdmin(PayItForwardDbContext context)
         {
-            if (context.Users.Any())
+            // Don't add role if there are no users
+            if (!context.Users.Any())
             {
-                if (context.Roles.Any(a => a.Name == GlobalConstants.AdminRole))
-                {
-                    PayItForward.Data.Models.User adminViki = new PayItForward.Data.Models.User
-                    {
-                        FirstName = "Viktoria",
-                        LastName = "Penkova",
-                        PasswordHash = "1234",
-                        NormalizedEmail = "vicky.penkova@gmail.com" // Normalization stops people registering user names which only differ in letter casing.
-                    };
-
-                    this.users.Add(adminViki);
-                    context.Users.Add(adminViki);
-                    context.SaveChanges();
-                }
+                this.users = context.Users.ToList();
+                return this.users;
             }
+
+            if (context.Roles.Any(a => a.Name == GlobalConstants.AdminRole))
+            {
+                PayItForward.Data.Models.User adminViki = new PayItForward.Data.Models.User
+                {
+                    FirstName = "Viktoria",
+                    LastName = "Penkova",
+                    PasswordHash = "1234",
+                    NormalizedEmail = "vicky.penkova@gmail.com" // Normalization stops people registering user names which only differ in letter casing.
+                };
+
+                this.users.Add(adminViki);
+                context.Users.Add(adminViki);
+
+                context.SaveChanges();
+            }
+
+            // Update local user list
+            this.users = context.Users.ToList();
 
             return this.users;
         }
@@ -214,33 +229,33 @@
         {
             if (!context.Categories.Any())
             {
-                this.categories = new List<PayItForward.Data.Models.Category>()
-                {
-                    new PayItForward.Data.Models.Category
-                    {
-                        Name = "Education",
-                        IsRemoved = false
-                    },
-                    new PayItForward.Data.Models.Category
-                    {
-                        Name = "Health",
-                        IsRemoved = false
-                    },
-                    new PayItForward.Data.Models.Category
-                    {
-                        Name = "Sponsorship",
-                        IsRemoved = false
-                    }
-                };
-
-                foreach (PayItForward.Data.Models.Category category in this.categories)
-                {
-                    context.Categories.Add(category);
-                }
-
-                context.SaveChanges();
+                this.categories = context.Categories.ToList();
+                return this.categories;
             }
 
+            this.categories = new List<PayItForward.Data.Models.Category>()
+            {
+                new PayItForward.Data.Models.Category
+                {
+                    Name = "Education",
+                    IsRemoved = false
+                },
+                new PayItForward.Data.Models.Category
+                {
+                    Name = "Health",
+                    IsRemoved = false
+                },
+                new PayItForward.Data.Models.Category
+                {
+                    Name = "Sponsorship",
+                    IsRemoved = false
+                }
+            };
+            context.Categories.AddRange(this.categories);
+
+            context.SaveChanges();
+
+            // Update local List of categories
             this.categories = context.Categories.ToList();
 
             return this.categories;
@@ -292,6 +307,7 @@
                     ExpirationDate = new DateTime(2018, 9, 9, 16, 5, 7, 123)
                 }
              };
+
                 context.Stories.AddRange(this.stories);
             }
 
@@ -323,10 +339,8 @@
                         StoryId = this.stories.ElementAtOrDefault<PayItForward.Data.Models.Story>(1).StoryId
                     }
                 };
-                foreach (PayItForward.Data.Models.Donation donation in this.donations)
-                {
-                    context.Donations.Add(donation);
-                }
+
+                context.Donations.AddRange(this.donations);
 
                 context.SaveChanges();
             }
