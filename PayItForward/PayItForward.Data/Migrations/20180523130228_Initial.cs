@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace PayItForward.Data.Migrations
 {
-    public partial class UpdateDatabase : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

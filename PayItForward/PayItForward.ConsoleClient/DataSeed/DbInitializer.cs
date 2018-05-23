@@ -3,36 +3,30 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Identity;
-    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.EntityFrameworkCore;
     using PayItForward.Common;
     using PayItForward.Data;
     using PayItForward.Data.Models;
+    using Dbmodel = PayItForward.Data.Models;
 
     public class DbInitializer
     {
-        private List<PayItForward.Data.Models.User> users;
-        private List<PayItForward.Data.Models.Story> stories;
-        private List<PayItForward.Data.Models.Category> categories;
-        private List<PayItForward.Data.Models.Donation> donations;
+        private List<Dbmodel.Story> stories;
+        private List<Dbmodel.Category> categories;
+        private List<Dbmodel.Donation> donations;
 
         public void Initialize(PayItForwardDbContext context, IServiceProvider serviceProvider)
         {
-            context.Database.EnsureCreated();
+            context.Database.Migrate();
 
-            this.AddUserRole(context);
+            this.AddRoles(context);
 
-            this.SeedUsers(context);
+            var users = this.SeedUsers(context);
 
-            this.SeedUsersToRole(context);
+            this.AddUsersToUserRole(context, users);
 
-            this.AddAdminRole(context);
-
-            this.SeedAdmin(context);
-
-            this.SeedAdminToRole(context);
+            this.SeedAdmin(context, users.First());
 
             this.SeedCategories(context);
 
@@ -41,14 +35,9 @@
             this.SeedDonations(context);
         }
 
-        private void AddUserRole(PayItForwardDbContext context)
+        private void AddRoles(PayItForwardDbContext context)
         {
-            if (context.Users.Any())
-            {
-                return;
-            }
-
-            if (context.Roles.Any(r => r.Name == GlobalConstants.UserRole))
+            if (context.Roles.Any())
             {
                 return;
             }
@@ -57,57 +46,52 @@
             {
                 Name = GlobalConstants.UserRole
             };
+            var adminRole = new IdentityRole<Guid>
+            {
+                Name = GlobalConstants.AdminRole
+            };
 
             context.Roles.Add(userRole);
+            context.Roles.Add(adminRole);
             context.SaveChanges();
         }
 
-        private List<PayItForward.Data.Models.User> SeedUsers(PayItForwardDbContext context)
+        private List<Dbmodel.User> SeedUsers(PayItForwardDbContext context)
         {
             if (context.Users.Any())
             {
-                this.users = context.Users.ToList();
-                return this.users;
+                return context.Users.ToList();
             }
 
-            try
+            if (context.Roles.Any(r => r.Name == GlobalConstants.UserRole))
             {
-                if (context.Roles.Any(r => r.Name == GlobalConstants.UserRole))
-                {
-                    this.users = new List<PayItForward.Data.Models.User>()
+                var users = new List<Dbmodel.User>()
                     {
-                        new PayItForward.Data.Models.User
+                        new Dbmodel.User
                         {
                             FirstName = "Aleksandra",
-                            LastName = "Stoicheva",
+                            LastName = "Stoicheva"
                         },
-                            new PayItForward.Data.Models.User
-                            {
-                                FirstName = "Peter",
-                                LastName = "Petkov"
-                            },
-                            new PayItForward.Data.Models.User
-                            {
-                                FirstName = "Single",
-                                LastName = "Mingle"
-                            }
+                        new Dbmodel.User
+                        {
+                            FirstName = "Peter",
+                            LastName = "Petkov"
+                        },
+                        new Dbmodel.User
+                        {
+                            FirstName = "Single",
+                            LastName = "Mingle"
+                        }
                     };
 
-                    context.Users.AddRange(this.users);
-                    context.SaveChanges();
-                }
-
-                this.users = context.Users.ToList();
-            }
-            catch (Exception ex)
-            {
-                ex.ToString();
+                context.Users.AddRange(users);
+                context.SaveChanges();
             }
 
-            return this.users;
+            return context.Users.ToList();
         }
 
-        private void SeedUsersToRole(PayItForwardDbContext context)
+        private void AddUsersToUserRole(PayItForwardDbContext context, List<Dbmodel.User> users)
         {
             if (!context.Users.Any())
             {
@@ -120,120 +104,47 @@
                 return;
             }
 
-            var userRole = context.Roles.FirstOrDefault<IdentityRole<Guid>>(r => r.Name == GlobalConstants.UserRole);
+            var userRole = context.Roles.FirstOrDefault(r => r.Name == GlobalConstants.UserRole);
 
-            if (userRole.Name != GlobalConstants.UserRole)
+            if (userRole != null)
             {
-                return;
-            }
-
-            foreach (PayItForward.Data.Models.User user in this.users)
-            {
-                if (!context.UserRoles.Any(a => a.UserId == user.Id && a.RoleId == userRole.Id))
+                foreach (Dbmodel.User user in users)
                 {
-                    context.UserRoles.Add(new IdentityUserRole<Guid>()
-                    {
-                        RoleId = userRole.Id,
-                        UserId = user.Id
-                    });
-                }
-            }
-
-            context.SaveChanges();
-        }
-
-        private void AddAdminRole(PayItForwardDbContext context)
-        {
-            // Don't add role if there are no users
-            if (!context.Users.Any())
-            {
-                return;
-            }
-
-            // If there is already admin don't add one
-            if (context.Roles.Any(r => r.Name == GlobalConstants.AdminRole))
-            {
-                return;
-            }
-
-            var adminRole = new IdentityRole<Guid>
-            {
-                Name = GlobalConstants.AdminRole,
-            };
-
-            context.Roles.Add(adminRole);
-
-            context.SaveChanges();
-        }
-
-        private List<PayItForward.Data.Models.User> SeedAdmin(PayItForwardDbContext context)
-        {
-            // Don't add role if there are no users
-            if (!context.Users.Any())
-            {
-                this.users = context.Users.ToList();
-                return this.users;
-            }
-
-            // Don't add admin user if there is already a user with this role
-            if (context.UserRoles.Any(a => a.RoleId == context.Roles.SingleOrDefault(r => r.Name == GlobalConstants.AdminRole).Id))
-            {
-                this.users = context.Users.ToList();
-                return this.users;
-            }
-
-            if (context.Roles.Any(a => a.Name == GlobalConstants.AdminRole))
-            {
-                PayItForward.Data.Models.User adminViki = new PayItForward.Data.Models.User
-                {
-                    FirstName = "Viktoria",
-                    LastName = "Penkova",
-                    PasswordHash = "1234",
-                    NormalizedEmail = "vicky.penkova@gmail.com" // Normalization stops people registering user names which only differ in letter casing.
-                };
-
-                this.users.Add(adminViki);
-                context.Users.Add(adminViki);
-
-                context.SaveChanges();
-            }
-
-            // Update local user list
-            this.users = context.Users.ToList();
-
-            return this.users;
-        }
-
-        private void SeedAdminToRole(PayItForwardDbContext context)
-        {
-            // If there are no users do not assign roles
-            if (!context.Users.Any())
-            {
-                return;
-            }
-
-            var adminRole = context.Roles.FirstOrDefault<IdentityRole<Guid>>(r => r.Name == GlobalConstants.AdminRole);
-
-            if (adminRole.Name != GlobalConstants.AdminRole)
-            {
-                return;
-            }
-
-            foreach (PayItForward.Data.Models.User user in this.users)
-            {
-                if (!context.UserRoles.Any(a => a.UserId == user.Id && a.RoleId == adminRole.Id))
-                {
-                    if (user.NormalizedEmail == "vicky.penkova@gmail.com")
+                    if (!context.UserRoles.Any(a => a.UserId == user.Id && a.RoleId == userRole.Id))
                     {
                         context.UserRoles.Add(new IdentityUserRole<Guid>()
                         {
-                            RoleId = adminRole.Id,
-                            UserId = user.Id,
+                            RoleId = userRole.Id,
+                            UserId = user.Id
                         });
-
-                        context.SaveChanges();
                     }
                 }
+
+                context.SaveChanges();
+            }
+        }
+
+        private void SeedAdmin(PayItForwardDbContext context, Dbmodel.User user)
+        {
+            if (!context.Roles.Any(r => r.Name == GlobalConstants.AdminRole))
+            {
+                return;
+            }
+
+            var adminRole = context.Roles.FirstOrDefault(r => r.Name == GlobalConstants.AdminRole);
+
+            if (adminRole != null)
+            {
+                if (!context.UserRoles.Any(a => a.UserId == user.Id && a.RoleId == adminRole.Id))
+                {
+                    context.UserRoles.Add(new IdentityUserRole<Guid>()
+                    {
+                        RoleId = adminRole.Id,
+                        UserId = user.Id
+                    });
+                }
+
+                context.SaveChanges();
             }
         }
 
@@ -246,19 +157,19 @@
                 return this.categories;
             }
 
-            this.categories = new List<PayItForward.Data.Models.Category>()
+            this.categories = new List<Dbmodel.Category>()
             {
-                new PayItForward.Data.Models.Category
+                new Dbmodel.Category
                 {
                     Name = "Education",
                     IsRemoved = false
                 },
-                new PayItForward.Data.Models.Category
+                new Dbmodel.Category
                 {
                     Name = "Health",
                     IsRemoved = false
                 },
-                new PayItForward.Data.Models.Category
+                new Dbmodel.Category
                 {
                     Name = "Sponsorship",
                     IsRemoved = false
@@ -279,13 +190,13 @@
             this.stories = context.Stories.ToList();
             if (!context.Stories.Any())
             {
-                this.stories = new List<PayItForward.Data.Models.Story>()
+                this.stories = new List<Dbmodel.Story>()
              {
-                new PayItForward.Data.Models.Story
+                new Dbmodel.Story
                 {
                     Title = "Help me!",
                     IsClosed = false,
-                    UserId = this.users.FirstOrDefault(u => u.FirstName == "Aleksandra").Id,
+                    UserId = context.Users.FirstOrDefault(u => u.FirstName == "Aleksandra").Id,
                     CategoryId = this.categories.FirstOrDefault(c => c.Name == "Health").CategoryId,
                     IsRemoved = false,
                     GoalAmount = 1500,
@@ -293,11 +204,11 @@
                     CollectedAmount = 0,
                     ExpirationDate = new DateTime(2018, 9, 9, 16, 5, 7, 123)
                 },
-                new PayItForward.Data.Models.Story
+                new Dbmodel.Story
                 {
                     Title = "Education support",
                     IsClosed = false,
-                    UserId = this.users.FirstOrDefault(u => u.FirstName == "Viktoria").Id,
+                    UserId = context.Users.FirstOrDefault(u => u.FirstName == "Viktoria").Id,
                     CategoryId = this.categories.FirstOrDefault(c => c.Name == "Education").CategoryId,
                     IsRemoved = false,
                     GoalAmount = 900,
@@ -306,11 +217,11 @@
                     CollectedAmount = 30,
                     ExpirationDate = new DateTime(2018, 9, 9, 16, 5, 7, 123)
                 },
-                new PayItForward.Data.Models.Story
+                new Dbmodel.Story
                 {
                     Title = "Sponsor me!",
                     IsClosed = false,
-                    UserId = this.users.FirstOrDefault(u => u.FirstName == "Single").Id,
+                    UserId = context.Users.FirstOrDefault(u => u.FirstName == "Single").Id,
                     CategoryId = this.categories.FirstOrDefault(c => c.Name == "Sponsorship").CategoryId,
                     IsRemoved = false,
                     GoalAmount = 700,
@@ -331,25 +242,25 @@
         {
             if (!context.Donations.Any())
             {
-                this.donations = new List<PayItForward.Data.Models.Donation>()
+                this.donations = new List<Dbmodel.Donation>()
                 {
-                    new PayItForward.Data.Models.Donation
+                    new Dbmodel.Donation
                     {
                         Amount = 300,
-                        UserId = this.users.ElementAtOrDefault<PayItForward.Data.Models.User>(0).Id,
-                        StoryId = this.stories.ElementAtOrDefault<PayItForward.Data.Models.Story>(0).StoryId
+                        UserId = context.Users.ElementAtOrDefault<Dbmodel.User>(0).Id,
+                        StoryId = this.stories.ElementAtOrDefault<Dbmodel.Story>(0).StoryId
                     },
-                    new PayItForward.Data.Models.Donation
+                    new Dbmodel.Donation
                     {
                         Amount = 800,
-                        UserId = this.users.ElementAtOrDefault<PayItForward.Data.Models.User>(1).Id,
-                        StoryId = this.stories.ElementAtOrDefault<PayItForward.Data.Models.Story>(0).StoryId
+                        UserId = context.Users.ElementAtOrDefault<Dbmodel.User>(1).Id,
+                        StoryId = this.stories.ElementAtOrDefault<Dbmodel.Story>(0).StoryId
                     },
-                    new PayItForward.Data.Models.Donation
+                    new Dbmodel.Donation
                     {
                         Amount = 3006,
-                        User = this.users.ElementAtOrDefault<PayItForward.Data.Models.User>(2),
-                        StoryId = this.stories.ElementAtOrDefault<PayItForward.Data.Models.Story>(1).StoryId
+                        User = context.Users.ElementAtOrDefault<Dbmodel.User>(2),
+                        StoryId = this.stories.ElementAtOrDefault<Dbmodel.Story>(1).StoryId
                     }
                 };
 

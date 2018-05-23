@@ -11,8 +11,8 @@ using System;
 namespace PayItForward.Data.Migrations
 {
     [DbContext(typeof(PayItForwardDbContext))]
-    [Migration("20180517084224_UpdateDatabase")]
-    partial class UpdateDatabase
+    [Migration("20180523130228_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

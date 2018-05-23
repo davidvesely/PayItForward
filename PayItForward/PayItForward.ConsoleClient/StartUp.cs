@@ -14,21 +14,30 @@
     {
         public static void Main(string[] args)
         {
-            IConsoleWrapper consoleWrapper = new ConsoleWrapper();
-
-            // var serviceProvider = new ServiceCollection().BuildServiceProvider();
             IServiceCollection services = new ServiceCollection();
-
-            var serviceProvider = services.BuildServiceProvider();
-
             services.AddIdentity<PayItForward.Data.Models.User, IdentityRole>();
 
-            List<ILoggable> users = new List<ILoggable>()
-             {
-                new User("Viki", "Penkova", Guid.NewGuid()),
-                new User("Aleks", "Stoycheva", Guid.NewGuid()),
-                new User("Peter", "Petkov", Guid.NewGuid())
-             };
+            // Seeding data from database
+            InitializeData(services);
+
+            // Log dbusers info
+            PrintData();
+        }
+
+        private static void InitializeData(IServiceCollection services)
+        {
+            var serviceProvider = services.BuildServiceProvider();
+            using (var context = new PayItForwardContextFactory().CreateDbContext())
+            {
+                DbInitializer initializer = new DbInitializer();
+
+                initializer.Initialize(context, serviceProvider);
+            }
+        }
+
+        private static void PrintData()
+        {
+            IConsoleWrapper consoleWrapper = new ConsoleWrapper();
 
             List<Logger> loggers = new List<Logger>()
              {
@@ -37,53 +46,30 @@
                 new DetailedLoggerInfo("DetailedLoggerInfo", consoleWrapper)
              };
 
-            foreach (var logger in loggers)
-            {
-                logger.PrintInfoList(users);
-            }
-
-            // Seeding data from database
-            using (var context = new PayItForwardContextFactory().CreateDbContext())
-            {
-                DbInitializer initializer = new DbInitializer();
-
-                // initializer.Initialize(context, serviceProvider);
-            }
-
             // Logging data from database
-            Logger colorfulLogger = new ColorfulLoggerInfo("DbUserColorfulLogger", ConsoleColor.Blue, consoleWrapper);
-
-            var optionsBuilder = new DbContextOptionsBuilder<PayItForwardDbContext>();
-
-            colorfulLogger.LoggerName();
-
-            using (var payItForwardDbContext = new PayItForwardDbContext(optionsBuilder.Options))
+            using (var payItForwardDbContext = new PayItForwardContextFactory().CreateDbContext())
             {
-                var dbusersTolist = payItForwardDbContext.Users.ToList();
-                List<ILoggable> dbusers = new List<ILoggable>();
+                var usersFromdb = payItForwardDbContext.Users.ToList();
+                List<ILoggable> localUsers = new List<ILoggable>();
 
                 if (payItForwardDbContext.Users.Any())
                 {
-                    foreach (var user in dbusersTolist)
+                    foreach (var user in usersFromdb)
                     {
-                        dbusers = new List<ILoggable>()
-                         {
-                            new User(
-                                payItForwardDbContext.Users.FirstOrDefault(u => u.FirstName == "Aleksandra").FirstName,
-                                dbusersTolist.FirstOrDefault(u => u.LastName == "Stoicheva").LastName,
-                                dbusersTolist.FirstOrDefault(u => u.FirstName == "Aleksandra").Id),
-                             new User(
-                                dbusersTolist.FirstOrDefault(u => u.FirstName == "Peter").FirstName,
-                                dbusersTolist.FirstOrDefault(u => u.LastName == "Petkov").LastName,
-                                dbusersTolist.FirstOrDefault(u => u.FirstName == "Peter").Id),
-                            new User(
-                                payItForwardDbContext.Users.FirstOrDefault(u => u.FirstName == "Viktoria").FirstName,
-                                dbusersTolist.FirstOrDefault(u => u.LastName == "Penkova").LastName,
-                                dbusersTolist.FirstOrDefault(u => u.FirstName == "Viktoria").Id)
-                        };
+                        localUsers.Add(new User(
+                                user.FirstName,
+                                user.LastName,
+                                user.Id));
+                        if (localUsers.Count == 3)
+                        {
+                            break;
+                        }
                     }
 
-                    colorfulLogger.PrintInfoList(dbusers);
+                    foreach (var logger in loggers)
+                    {
+                        logger.PrintInfoList(localUsers);
+                    }
                 }
             }
         }
