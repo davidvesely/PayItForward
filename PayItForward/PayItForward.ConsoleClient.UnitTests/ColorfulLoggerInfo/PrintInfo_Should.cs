@@ -1,5 +1,4 @@
-﻿
-namespace PayItForward.ConsoleClient.UnitTests.ColorfulLoggerInfo
+﻿namespace PayItForward.ConsoleClient.UnitTests.ColorfulLoggerInfo
 {
     using System;
     using Moq;

@@ -1,7 +1,7 @@
 ﻿namespace PayItForward.ConsoleClient
 {
-    using Moq;
     using System;
+    using Moq;
     using Xunit;
 
     public class PrintInfo_Should

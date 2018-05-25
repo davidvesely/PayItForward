@@ -1,8 +1,7 @@
-﻿
-namespace PayItForward.ConsoleClient.UnitTests.DetailedLoggerInfo
+﻿namespace PayItForward.ConsoleClient.UnitTests.DetailedLoggerInfo
 {
-    using Moq;
     using System;
+    using Moq;
     using Xunit;
 
     public class PrintInfo_Should

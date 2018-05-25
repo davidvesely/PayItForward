@@ -1,8 +1,8 @@
-﻿using System;
-using Xunit;
-
-namespace PayItForward.ConsoleClient.UnitTests.User
+﻿namespace PayItForward.ConsoleClient.UnitTests.User
 {
+    using System;
+    using Xunit;
+
     public class Constructor_Should
     {
         private IConsoleWrapper consoleWrapper;
