@@ -12,10 +12,6 @@
 
     public class DbInitializer
     {
-        private List<Dbmodel.Story> stories;
-        private List<Dbmodel.Category> categories;
-        private List<Dbmodel.Donation> donations;
-
         public void Initialize(PayItForwardDbContext context, IServiceProvider serviceProvider)
         {
             context.Database.Migrate();
@@ -28,9 +24,9 @@
 
             this.SeedAdmin(context, users.First());
 
-            this.SeedCategories(context);
+            var categories = this.SeedCategories(context);
 
-            this.SeedStories(context, this.SeedCategories(context));
+            this.SeedStories(context, categories);
 
             this.SeedDonations(context);
         }
@@ -150,14 +146,13 @@
 
         private List<Category> SeedCategories(PayItForwardDbContext context)
         {
-            // iF there there are categories in the database do not seed more
+            // if there are categories in the database do not seed more
             if (context.Categories.Any())
             {
-                this.categories = context.Categories.ToList();
-                return this.categories;
+                return context.Categories.ToList();
             }
 
-            this.categories = new List<Dbmodel.Category>()
+            List<Dbmodel.Category> categories = new List<Dbmodel.Category>()
             {
                 new Dbmodel.Category
                 {
@@ -175,29 +170,28 @@
                     IsRemoved = false
                 }
             };
-            context.Categories.AddRange(this.categories);
 
+            context.Categories.AddRange(categories);
             context.SaveChanges();
 
-            // Update local List of categories
-            this.categories = context.Categories.ToList();
-
-            return this.categories;
+            return context.Categories.ToList();
         }
 
-        private void SeedStories(PayItForwardDbContext context, List<Category> categories)
+        private void SeedStories(PayItForwardDbContext context, List<Dbmodel.Category> categories)
         {
-            this.stories = context.Stories.ToList();
-            if (!context.Stories.Any())
+            if (context.Stories.Any())
             {
-                this.stories = new List<Dbmodel.Story>()
-             {
+                return;
+            }
+
+            List<Dbmodel.Story> stories = new List<Dbmodel.Story>()
+              {
                 new Dbmodel.Story
                 {
                     Title = "Help me!",
                     IsClosed = false,
                     UserId = context.Users.FirstOrDefault(u => u.FirstName == "Aleksandra").Id,
-                    CategoryId = this.categories.FirstOrDefault(c => c.Name == "Health").CategoryId,
+                    CategoryId = context.Categories.FirstOrDefault(c => c.Name == "Health").CategoryId,
                     IsRemoved = false,
                     GoalAmount = 1500,
                     IsAccepted = true,
@@ -208,8 +202,8 @@
                 {
                     Title = "Education support",
                     IsClosed = false,
-                    UserId = context.Users.FirstOrDefault(u => u.FirstName == "Viktoria").Id,
-                    CategoryId = this.categories.FirstOrDefault(c => c.Name == "Education").CategoryId,
+                    UserId = context.Users.FirstOrDefault(u => u.FirstName == "Peter").Id,
+                    CategoryId = context.Categories.FirstOrDefault(c => c.Name == "Education").CategoryId,
                     IsRemoved = false,
                     GoalAmount = 900,
                     IsAccepted = true,
@@ -222,7 +216,7 @@
                     Title = "Sponsor me!",
                     IsClosed = false,
                     UserId = context.Users.FirstOrDefault(u => u.FirstName == "Single").Id,
-                    CategoryId = this.categories.FirstOrDefault(c => c.Name == "Sponsorship").CategoryId,
+                    CategoryId = context.Categories.FirstOrDefault(c => c.Name == "Sponsorship").CategoryId,
                     IsRemoved = false,
                     GoalAmount = 700,
                     IsAccepted = true,
@@ -230,44 +224,44 @@
                     CollectedAmount = 80,
                     ExpirationDate = new DateTime(2018, 9, 9, 16, 5, 7, 123)
                 }
-             };
-
-                context.Stories.AddRange(this.stories);
-            }
+              };
+            context.Stories.AddRange(stories);
 
             context.SaveChanges();
         }
 
         private void SeedDonations(PayItForwardDbContext context)
         {
-            if (!context.Donations.Any())
+            if (context.Donations.Any())
             {
-                this.donations = new List<Dbmodel.Donation>()
-                {
-                    new Dbmodel.Donation
-                    {
-                        Amount = 300,
-                        UserId = context.Users.ElementAtOrDefault<Dbmodel.User>(0).Id,
-                        StoryId = this.stories.ElementAtOrDefault<Dbmodel.Story>(0).StoryId
-                    },
-                    new Dbmodel.Donation
-                    {
-                        Amount = 800,
-                        UserId = context.Users.ElementAtOrDefault<Dbmodel.User>(1).Id,
-                        StoryId = this.stories.ElementAtOrDefault<Dbmodel.Story>(0).StoryId
-                    },
-                    new Dbmodel.Donation
-                    {
-                        Amount = 3006,
-                        User = context.Users.ElementAtOrDefault<Dbmodel.User>(2),
-                        StoryId = this.stories.ElementAtOrDefault<Dbmodel.Story>(1).StoryId
-                    }
-                };
-
-                context.Donations.AddRange(this.donations);
-
-                context.SaveChanges();
+                return;
             }
+
+            List<Dbmodel.Donation> donations = new List<Dbmodel.Donation>()
+            {
+                new Dbmodel.Donation
+                {
+                    Amount = 300,
+                    UserId = context.Users.FirstOrDefault<Dbmodel.User>(u => u.FirstName == "Aleksandra").Id,
+                    StoryId = context.Stories.FirstOrDefault(c => c.Title == "Help me!").StoryId
+                },
+                new Dbmodel.Donation
+                {
+                    Amount = 800,
+                    UserId = context.Users.FirstOrDefault<Dbmodel.User>(u => u.FirstName == "Aleksandra").Id,
+                    StoryId = context.Stories.FirstOrDefault(c => c.Title == "Education support").StoryId
+                },
+                new Dbmodel.Donation
+                {
+                    Amount = 3006,
+                    UserId = context.Users.FirstOrDefault<Dbmodel.User>(u => u.FirstName == "Single").Id,
+                    StoryId = context.Stories.FirstOrDefault(c => c.Title == "Sponsor me!").StoryId
+                }
+            };
+
+            context.Donations.AddRange(donations);
+
+            context.SaveChanges();
         }
     }
 }
