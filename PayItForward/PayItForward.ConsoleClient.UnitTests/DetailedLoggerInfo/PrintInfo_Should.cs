@@ -19,7 +19,7 @@
         public void PrintBasicInfo()
         {
             // Arrange
-            ILoggable user = new ConsoleClient.User("Viki", "Penkova", Guid.NewGuid());
+            ILoggable user = new ConsoleClient.User("Viki", "Penkova", "123");
 
             // Act
             this.detailedLoggerInfo.PrintInfo(user);

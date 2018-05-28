@@ -5,6 +5,7 @@
     using System.Linq;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.DependencyInjection;
     using PayItForward.Common;
     using PayItForward.Data;
     using PayItForward.Data.Models;
@@ -12,144 +13,100 @@
 
     public class DbInitializer
     {
-        public void Initialize(PayItForwardDbContext context, IServiceProvider serviceProvider)
+        private IServiceProvider serviceProvider;
+        private PayItForwardDbContext context;
+
+        public DbInitializer(IServiceProvider serviceProvider)
         {
-            context.Database.Migrate();
-
-            this.AddRoles(context);
-
-            var users = this.SeedUsers(context);
-
-            this.AddUsersToUserRole(context, users);
-
-            this.SeedAdmin(context, users.First());
-
-            var categories = this.SeedCategories(context);
-
-            this.SeedStories(context, categories);
-
-            this.SeedDonations(context);
+            this.serviceProvider = serviceProvider;
+            this.context = this.serviceProvider.GetRequiredService<PayItForwardDbContext>();
         }
 
-        private void AddRoles(PayItForwardDbContext context)
+        public void Initialize()
         {
-            if (context.Roles.Any())
+            this.context.Database.Migrate();
+
+            this.AddRoles();
+
+            this.SeedUsers();
+
+            var categories = this.SeedCategories();
+
+            this.SeedStories(categories);
+
+            this.SeedDonations();
+        }
+
+        private void AddRoles()
+        {
+            var roleManager = this.serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var roleCheck = roleManager.RoleExistsAsync(GlobalConstants.AdminRole).Result;
+
+            if (!roleCheck)
+            {
+                roleManager.CreateAsync(new IdentityRole(GlobalConstants.AdminRole)).Wait();
+            }
+
+            roleCheck = roleManager.RoleExistsAsync(GlobalConstants.UserRole).Result;
+            if (!roleCheck)
+            {
+                roleManager.CreateAsync(new IdentityRole(GlobalConstants.UserRole)).Wait();
+            }
+        }
+
+        private void SeedUsers()
+        {
+            if (this.context.Users.Any())
             {
                 return;
             }
 
-            var userRole = new IdentityRole<Guid>
+            var userManager = this.serviceProvider.GetRequiredService<UserManager<Dbmodel.User>>();
+            var adminUser = new Dbmodel.User
             {
-                Name = GlobalConstants.UserRole
+                UserName = "Aleks",
+                Email = "aleks@gmail.com",
+                FirstName = "Aleksandra",
+                LastName = "Stoicheva",
+                SecurityStamp = "blabvla"
             };
-            var adminRole = new IdentityRole<Guid>
+
+            var result = userManager.CreateAsync(adminUser, "qwerty123@").Result;
+            userManager.AddToRoleAsync(adminUser, GlobalConstants.AdminRole).Wait();
+
+            var users = new List<Dbmodel.User>()
             {
-                Name = GlobalConstants.AdminRole
+                new Dbmodel.User
+                {
+                    UserName = "peter",
+                    Email = "peter@gmail.com",
+                    FirstName = "Peter",
+                    LastName = "Petkov",
+                    SecurityStamp = "sfkjhsfd"
+                },
+                new Dbmodel.User
+                {
+                        UserName = "single",
+                    Email = "single@gmail.com",
+                    FirstName = "Single",
+                    LastName = "Mingle",
+                    SecurityStamp = "saujhfsaofuh"
+                }
             };
 
-            context.Roles.Add(userRole);
-            context.Roles.Add(adminRole);
-            context.SaveChanges();
-        }
-
-        private List<Dbmodel.User> SeedUsers(PayItForwardDbContext context)
-        {
-            if (context.Users.Any())
+            foreach (var user in users)
             {
-                return context.Users.ToList();
-            }
-
-            if (context.Roles.Any(r => r.Name == GlobalConstants.UserRole))
-            {
-                var users = new List<Dbmodel.User>()
-                    {
-                        new Dbmodel.User
-                        {
-                            FirstName = "Aleksandra",
-                            LastName = "Stoicheva"
-                        },
-                        new Dbmodel.User
-                        {
-                            FirstName = "Peter",
-                            LastName = "Petkov"
-                        },
-                        new Dbmodel.User
-                        {
-                            FirstName = "Single",
-                            LastName = "Mingle"
-                        }
-                    };
-
-                context.Users.AddRange(users);
-                context.SaveChanges();
-            }
-
-            return context.Users.ToList();
-        }
-
-        private void AddUsersToUserRole(PayItForwardDbContext context, List<Dbmodel.User> users)
-        {
-            if (!context.Users.Any())
-            {
-                return;
-            }
-
-            // Don't seed if there are no roles
-            if (!context.Roles.Any())
-            {
-                return;
-            }
-
-            var userRole = context.Roles.FirstOrDefault(r => r.Name == GlobalConstants.UserRole);
-
-            if (userRole != null)
-            {
-                foreach (Dbmodel.User user in users)
-                {
-                    if (!context.UserRoles.Any(a => a.UserId == user.Id && a.RoleId == userRole.Id))
-                    {
-                        context.UserRoles.Add(new IdentityUserRole<Guid>()
-                        {
-                            RoleId = userRole.Id,
-                            UserId = user.Id
-                        });
-                    }
-                }
-
-                context.SaveChanges();
+                userManager.CreateAsync(user, "qwerty123@").Wait();
+                userManager.AddToRoleAsync(user, GlobalConstants.UserRole).Wait();
             }
         }
 
-        private void SeedAdmin(PayItForwardDbContext context, Dbmodel.User user)
-        {
-            if (!context.Roles.Any(r => r.Name == GlobalConstants.AdminRole))
-            {
-                return;
-            }
-
-            var adminRole = context.Roles.FirstOrDefault(r => r.Name == GlobalConstants.AdminRole);
-
-            if (adminRole != null)
-            {
-                if (!context.UserRoles.Any(a => a.UserId == user.Id && a.RoleId == adminRole.Id))
-                {
-                    context.UserRoles.Add(new IdentityUserRole<Guid>()
-                    {
-                        RoleId = adminRole.Id,
-                        UserId = user.Id
-                    });
-                }
-
-                context.SaveChanges();
-            }
-        }
-
-        private List<Category> SeedCategories(PayItForwardDbContext context)
+        private List<Category> SeedCategories()
         {
             // if there are categories in the database do not seed more
-            if (context.Categories.Any())
+            if (this.context.Categories.Any())
             {
-                return context.Categories.ToList();
+                return this.context.Categories.ToList();
             }
 
             List<Dbmodel.Category> categories = new List<Dbmodel.Category>()
@@ -171,27 +128,27 @@
                 }
             };
 
-            context.Categories.AddRange(categories);
-            context.SaveChanges();
+            this.context.Categories.AddRange(categories);
+            this.context.SaveChanges();
 
-            return context.Categories.ToList();
+            return this.context.Categories.ToList();
         }
 
-        private void SeedStories(PayItForwardDbContext context, List<Dbmodel.Category> categories)
+        private void SeedStories(List<Dbmodel.Category> categories)
         {
-            if (context.Stories.Any())
+            if (this.context.Stories.Any())
             {
                 return;
             }
 
             List<Dbmodel.Story> stories = new List<Dbmodel.Story>()
-              {
+            {
                 new Dbmodel.Story
                 {
                     Title = "Help me!",
                     IsClosed = false,
-                    UserId = context.Users.FirstOrDefault(u => u.FirstName == "Aleksandra").Id,
-                    CategoryId = context.Categories.FirstOrDefault(c => c.Name == "Health").CategoryId,
+                    UserId = this.context.Users.FirstOrDefault(u => u.FirstName == "Aleksandra").Id,
+                    CategoryId = this.context.Categories.FirstOrDefault(c => c.Name == "Health").CategoryId,
                     IsRemoved = false,
                     GoalAmount = 1500,
                     IsAccepted = true,
@@ -202,8 +159,8 @@
                 {
                     Title = "Education support",
                     IsClosed = false,
-                    UserId = context.Users.FirstOrDefault(u => u.FirstName == "Peter").Id,
-                    CategoryId = context.Categories.FirstOrDefault(c => c.Name == "Education").CategoryId,
+                    UserId = this.context.Users.FirstOrDefault(u => u.FirstName == "Peter").Id,
+                    CategoryId = this.context.Categories.FirstOrDefault(c => c.Name == "Education").CategoryId,
                     IsRemoved = false,
                     GoalAmount = 900,
                     IsAccepted = true,
@@ -215,8 +172,8 @@
                 {
                     Title = "Sponsor me!",
                     IsClosed = false,
-                    UserId = context.Users.FirstOrDefault(u => u.FirstName == "Single").Id,
-                    CategoryId = context.Categories.FirstOrDefault(c => c.Name == "Sponsorship").CategoryId,
+                    UserId = this.context.Users.FirstOrDefault(u => u.FirstName == "Single").Id,
+                    CategoryId = this.context.Categories.FirstOrDefault(c => c.Name == "Sponsorship").CategoryId,
                     IsRemoved = false,
                     GoalAmount = 700,
                     IsAccepted = true,
@@ -224,15 +181,16 @@
                     CollectedAmount = 80,
                     ExpirationDate = new DateTime(2018, 9, 9, 16, 5, 7, 123)
                 }
-              };
-            context.Stories.AddRange(stories);
+            };
 
-            context.SaveChanges();
+            this.context.Stories.AddRange(stories);
+
+            this.context.SaveChanges();
         }
 
-        private void SeedDonations(PayItForwardDbContext context)
+        private void SeedDonations()
         {
-            if (context.Donations.Any())
+            if (this.context.Donations.Any())
             {
                 return;
             }
@@ -242,26 +200,26 @@
                 new Dbmodel.Donation
                 {
                     Amount = 300,
-                    UserId = context.Users.FirstOrDefault<Dbmodel.User>(u => u.FirstName == "Aleksandra").Id,
-                    StoryId = context.Stories.FirstOrDefault(c => c.Title == "Help me!").StoryId
+                    UserId = this.context.Users.FirstOrDefault<Dbmodel.User>(u => u.FirstName == "Aleksandra").Id,
+                    StoryId = this.context.Stories.FirstOrDefault(c => c.Title == "Help me!").StoryId
                 },
                 new Dbmodel.Donation
                 {
                     Amount = 800,
-                    UserId = context.Users.FirstOrDefault<Dbmodel.User>(u => u.FirstName == "Aleksandra").Id,
-                    StoryId = context.Stories.FirstOrDefault(c => c.Title == "Education support").StoryId
+                    UserId = this.context.Users.FirstOrDefault<Dbmodel.User>(u => u.FirstName == "Aleksandra").Id,
+                    StoryId = this.context.Stories.FirstOrDefault(c => c.Title == "Education support").StoryId
                 },
                 new Dbmodel.Donation
                 {
                     Amount = 3006,
-                    UserId = context.Users.FirstOrDefault<Dbmodel.User>(u => u.FirstName == "Single").Id,
-                    StoryId = context.Stories.FirstOrDefault(c => c.Title == "Sponsor me!").StoryId
+                    UserId = this.context.Users.FirstOrDefault<Dbmodel.User>(u => u.FirstName == "Single").Id,
+                    StoryId = this.context.Stories.FirstOrDefault(c => c.Title == "Sponsor me!").StoryId
                 }
             };
 
-            context.Donations.AddRange(donations);
+            this.context.Donations.AddRange(donations);
 
-            context.SaveChanges();
+            this.context.SaveChanges();
         }
     }
 }

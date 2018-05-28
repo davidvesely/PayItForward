@@ -9,7 +9,7 @@
 
         public LogBasicText_Should()
         {
-            this.loggable = new User("Viki", "Penkova", Guid.NewGuid());
+            this.loggable = new User("Viki", "Penkova", "123");
         }
 
         [Fact]

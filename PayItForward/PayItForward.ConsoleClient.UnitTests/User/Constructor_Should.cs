@@ -15,7 +15,7 @@
         [Fact]
         public void NotAcceptEmptyNameInConstructor()
         {
-            Assert.Throws<ArgumentNullException>(() => new PayItForward.ConsoleClient.User(null, null, Guid.NewGuid()));
+            Assert.Throws<ArgumentNullException>(() => new PayItForward.ConsoleClient.User(null, null, null));
         }
     }
 }

@@ -5,7 +5,7 @@
 
     public class User : ILoggable
     {
-        public User(string firstName, string lastName, Guid id)
+        public User(string firstName, string lastName, string id)
         {
             this.FirstName = firstName;
             this.LastName = lastName;
@@ -31,7 +31,7 @@
             }
         }
 
-        protected Guid Id { get; }
+        protected string Id { get; }
 
         protected double AvilableMoneyAmount { get; private set; }
 

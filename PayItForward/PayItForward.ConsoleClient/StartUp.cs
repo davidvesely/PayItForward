@@ -1,73 +1,46 @@
 ﻿namespace PayItForward.ConsoleClient
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using Microsoft.AspNetCore.Identity;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
+    using PayItForward.Common;
+    using PayItForward.ConsoleClient.DataPrint;
+    using PayItForward.Data;
 
     public class StartUp
     {
         public static void Main(string[] args)
         {
-            IServiceCollection services = new ServiceCollection();
-            services.AddIdentity<PayItForward.Data.Models.User, IdentityRole>();
+            var services = new ServiceCollection();
+
+            var connectionString = ConnectionStringResolver.GetConnectionString();
+
+            services.AddDbContext<PayItForwardDbContext>(options =>
+              options.UseSqlServer(connectionString));
+
+            services.AddIdentity<PayItForward.Data.Models.User, IdentityRole>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredLength = 6;
+            })
+                .AddEntityFrameworkStores<PayItForwardDbContext>()
+                .AddDefaultTokenProviders();
+
+            var serviceProvider = services.BuildServiceProvider();
 
             // Seeding data from database
-            InitializeData(services);
+            InitializeData(serviceProvider);
 
-            // Log dbusers info
-            PrintData();
+            // Print dbusers info
+            Printer.PrintData();
         }
 
-        private static void InitializeData(IServiceCollection services)
+        private static void InitializeData(ServiceProvider serviceProvider)
         {
-            var serviceProvider = services.BuildServiceProvider();
-            using (var context = new PayItForwardContextFactory().CreateDbContext())
-            {
-                DbInitializer initializer = new DbInitializer();
-
-                initializer.Initialize(context, serviceProvider);
-            }
-        }
-
-        private static void PrintData()
-        {
-            IConsoleWrapper consoleWrapper = new ConsoleWrapper();
-
-            List<Logger> loggers = new List<Logger>()
-             {
-                new BasicLoggerInfo("I am BasicLoggerInfo", consoleWrapper),
-                new ColorfulLoggerInfo("ColorfulLoggerInfo", ConsoleColor.Blue, consoleWrapper),
-                new DetailedLoggerInfo("DetailedLoggerInfo", consoleWrapper)
-             };
-
-            // Logging data from database
-            using (var payItForwardDbContext = new PayItForwardContextFactory().CreateDbContext())
-            {
-                var usersFromdb = payItForwardDbContext.Users.ToList();
-                List<ILoggable> localUsers = new List<ILoggable>();
-
-                if (payItForwardDbContext.Users.Any())
-                {
-                    foreach (var user in usersFromdb)
-                    {
-                        localUsers.Add(new User(
-                                user.FirstName,
-                                user.LastName,
-                                user.Id));
-                        if (localUsers.Count == 3)
-                        {
-                            break;
-                        }
-                    }
-
-                    foreach (var logger in loggers)
-                    {
-                        logger.PrintInfoList(localUsers);
-                    }
-                }
-            }
+            DbInitializer initializer = new DbInitializer(serviceProvider);
+            initializer.Initialize();
         }
     }
 }
